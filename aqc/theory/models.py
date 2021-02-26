@@ -19,8 +19,8 @@ class Model:
   def psd_phi(self, kappa, k, thickness):
     return 2 * np.pi * k**2 * thickness * self.psd_n(kappa)
 
-  def psd_phi_f(self, kappa, k, thickness):
-    return 2 * np.pi * k**2 * thickness * self.psd_n_f(kappa)
+  def psd_phi_f(self, f, k, thickness):
+    return 2 * np.pi * k**2 * thickness * self.psd_n_f(f)
 
   def sf_phi_numeric(self, r, k, thickness):
     xp = cupy.get_array_module(r)

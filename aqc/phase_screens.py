@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import numpy as np
+from scipy.integrate import quad
 
 from aqc.grid import RectGrid
 from aqc.utils import ifft2
@@ -58,18 +59,62 @@ class FFTPhaseScreen(PhaseScreen):
   
 
 @dataclass
+class SSPhaseScreen(PhaseScreen):
+  f_grid: object = None
+
+  def __post_init__(self):
+    self._sqrt_int_spectrum = None
+  
+  @property
+  def sqrt_int_spectrum(self):
+    if not self._sqrt_int_spectrum is None:
+      return self._sqrt_int_spectrum
+    
+    xp = self.grid.get_array_module()
+    f = self.f_grid.base
+    self._sqrt_int_spectrum = xp.empty(self.f_grid.points)
+    in_int_function = lambda f: (2 * np.pi)**2 * f * self.model.psd_phi_f(f, 2 * xp.pi / self.wvl, self.thickness)
+
+    for i in range(self.f_grid.points):
+      f_prev = f[i - 1] if i != 0 else 0
+      self._sqrt_int_spectrum[i] = xp.sqrt(2 * np.pi * quad(in_int_function, f_prev, f[i])[0])
+    
+    return self._sqrt_int_spectrum
+
+  def generate_phase_screen(self):
+    xp = self.grid.get_array_module()
+    
+    cn = xp.array([1, 1j]) @ xp.random.normal(size=(2, self.f_grid.points)) * self.sqrt_int_spectrum
+
+    rho = self.f_grid.get_rho()
+    theta = self.f_grid.get_theta()
+    fx, fy = self.f_grid.get_xy(rho, theta)
+    return xp.exp(1j * 2 * xp.pi * self.grid.get_y() @ fy.T) @ xp.diag(cn) @ xp.exp(1j * 2 * xp.pi * fx.T @ self.grid.get_x())
+
+  
+
+@dataclass
 class SUPhaseScreen(PhaseScreen):
   f_grid: object = None
+
+  def __post_init__(self):
+    self._delta_k_base = None
+  
+  @property
+  def delta_k_base(self):
+    xp = self.grid.get_array_module()
+    if self._delta_k_base is None:
+      self._delta_k_base = (2 * xp.pi)**2 * xp.array((self.f_grid.base**2 - np.insert(self.f_grid.base, 0, 0)[:-1]**2))
+    return self._delta_k_base
 
   def generate_phase_screen(self):
     xp = self.grid.get_array_module()
 
     rho = self.f_grid.get_rho()
     theta = self.f_grid.get_theta()
-    # cn = (xp.random.normal(size=self.f_grid.points) + 1j * xp.random.normal(size=self.f_grid.points)) * \
+    
     cn = xp.array([1, 1j]) @ xp.random.normal(size=(2, self.f_grid.points)) * \
-      xp.sqrt(self.model.psd_phi_f(rho, 2 * xp.pi / self.wvl, self.thickness) * \
-      xp.pi * (2 * xp.pi)**2 * xp.array((self.f_grid.base**2 - np.insert(self.f_grid.base, 0, 0)[:-1]**2))) 
+      xp.sqrt(self.model.psd_phi_f(rho, 2 * xp.pi / self.wvl, self.thickness) * xp.pi * self.delta_k_base) 
 
     fx, fy = self.f_grid.get_xy(rho, theta)
     return xp.exp(1j * 2 * xp.pi * self.grid.get_y() @ fy.T) @ xp.diag(cn) @ xp.exp(1j * 2 * xp.pi * fx.T @ self.grid.get_x())
@@ -92,10 +137,10 @@ class WindSUPhaseScreen(PhaseScreen):
     self.iteration = 0
 
   def generate_phase_screen(self):
-    xp = self.grid.get_array_module()
-
     if self.cnp is None:
       self.generate_cn()
+
+    xp = self.grid.get_array_module()
 
     cn = self.cnp * \
       xp.sqrt(self.model.psd_phi_f(self.rho, 2 * xp.pi / self.wvl, self.thickness) * \
