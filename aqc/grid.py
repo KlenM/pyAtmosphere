@@ -55,9 +55,12 @@ class RectGrid(Grid):
   def _bottom_bound(self):
     return self.resolution[1] // 2 + bool(self.resolution[1] % 2)
   
-  def get_N2(self):
+  def get_NxNy(self):
     xp = self.get_array_module()
-    Nx, Ny = xp.ogrid[self._top_bound:self._bottom_bound, self._left_bound:self._right_bound]
+    return xp.ogrid[self._top_bound:self._bottom_bound, self._left_bound:self._right_bound]
+
+  def get_N2(self):
+    Nx, Ny = self.get_NxNy()
     return Nx**2 + Ny**2
 
   def get_x(self):

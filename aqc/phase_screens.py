@@ -51,8 +51,8 @@ class FFTPhaseScreen(PhaseScreen):
       # fx, fy = sh_f_grid.get_xy()
       # return xp.exp(1j * 2 * xp.pi * self.grid.get_y() @ fy.T) @ cn @ xp.exp(1j * 2 * xp.pi * fx.T @ self.grid.get_x())
       f = sh_f_grid.get_x()
-      for i in range(sh_f_grid.resolution):
-        for j in range(sh_f_grid.resolution):
+      for i in range(sh_f_grid.resolution[0]):
+        for j in range(sh_f_grid.resolution[1]):
           phase_screen = phase_screen + cn[i,j] * xp.exp(1j * 2 * xp.pi * (f[0, i] * self.grid.get_x() + f[0, j] * self.grid.get_y()))
     
     return phase_screen - xp.mean(phase_screen)
