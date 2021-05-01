@@ -32,8 +32,6 @@ class PhaseScreenPath(AQCElement):
     for phase_screen in self.phase_screens:
       if not phase_screen.grid:
         phase_screen.grid = self.channel.grid
-      if hasattr(phase_screen, "f_grid"):
-        phase_screen.f_grid.xp = phase_screen.grid.xp
       phase_screen.wvl = self.channel.source.wvl
 
   def output(self, input, return_intermediate=False):

@@ -45,7 +45,7 @@ class FFTPhaseScreen(PhaseScreen):
     phase_screen = ifft2(get_cn_coefficients(f_grid), 1)
 
     for sh in range(self.subharmonics):
-      sh_f_grid = RectGrid(3, f_grid.delta / 3**(sh + 1), xp=xp)
+      sh_f_grid = RectGrid(3, f_grid.delta / 3**(sh + 1))
       cn = get_cn_coefficients(sh_f_grid)
 
       # fx, fy = sh_f_grid.get_xy()

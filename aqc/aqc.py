@@ -1,6 +1,15 @@
 from dataclasses import dataclass
-import cupy
 import numpy as np
+import cupy
+
+
+config = {
+  "use_gpu": True,
+  "dtype": {
+    "float": np.float32,
+    "complex": np.complex64
+  }
+}
 
 
 class AQCElement:
@@ -14,17 +23,13 @@ class AQC:
   source: AQCElement
   path: AQCElement
   pupil: AQCElement = None
-  f_grid: AQCElement = None
   use_GPU: bool = True
   
-  def __post_init__(self):    
-    self.grid.xp = cupy if self.use_GPU else np
+  def __post_init__(self):
     self.source.set_channel(self)
     self.path.set_channel(self)
     if self.pupil: 
       self.pupil.set_channel(self)
-    if self.f_grid:
-      self.f_grid.xp = cupy if self.use_GPU else np
 
   def run(self, pupil=True, *args, **kwargs):
     if pupil:

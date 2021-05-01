@@ -3,23 +3,20 @@ from dataclasses import dataclass
 import numpy as np
 import cupy
 
-from aqc.aqc import AQCElement
+from aqc.aqc import AQCElement, config
 
 
 @dataclass
 class Grid(AQCElement):
-  xp = np
-
   def get_array_module(self):
-    return self.xp
+    return cupy if config["use_gpu"] else np
 
 
 @dataclass
 class RectGrid(Grid):
   resolution: tuple
   delta: float
-  xp: object = np
-  dtype: object = np.float32
+  dtype: object = config["dtype"]["float"]
   
   def __post_init__(self):
     if isinstance(self.resolution, int):
@@ -83,7 +80,7 @@ class RectGrid(Grid):
     return xp.sqrt(self.get_rho2())
   
   def get_f_grid(self):
-    f_grid = RectGrid(resolution=int(np.min(self.resolution)), delta=1 / (np.min(self.resolution) * self.delta), xp=self.xp)
+    f_grid = RectGrid(resolution=int(np.min(self.resolution)), delta=1 / (np.min(self.resolution) * self.delta))
     return f_grid
 
 
@@ -93,8 +90,7 @@ class RandLogPolarGrid(Grid):
   points: int
   f_min: float
   f_max: float
-  xp: object = np
-  dtype: object = np.float32
+  dtype: object = config["dtype"]["float"]
 
 
   @property
