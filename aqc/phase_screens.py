@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 import numpy as np
 from scipy.integrate import quad
 
@@ -7,12 +6,28 @@ from aqc.grid import RectGrid
 from aqc.utils import ifft2
 
 
-@dataclass
+class Default:
+    def __init__(self, default_path):
+        self._default_path_list = default_path.split(".")
+
+    def __get__(self, obj, cls):
+        current_node = obj
+        for node in self._default_path_list:
+            current_node = getattr(current_node, node)
+        return current_node
+        
+
 class PhaseScreen():
-  model: object
-  grid: object = None
-  wvl: float = None
-  thickness: float = None
+  wvl = Default("channel.source.wvl")
+  grid = Default("channel.grid")
+  
+  def __init__(self, model, thickness=None, wvl=None, grid=None):
+    self.model = model
+    self.thickness = thickness
+    if wvl: 
+      self.wvl = wvl
+    if grid:
+      self.grid = grid
 
   def generate_phase_screen(self):
     """Return complex phase screen"""
@@ -30,9 +45,10 @@ class PhaseScreen():
       yield ps.imag
   
 
-@dataclass
 class FFTPhaseScreen(PhaseScreen):
-  subharmonics: int = 4
+  def __init__(self, subharmonics, *args, **kwargs):
+    self.subharmonics = subharmonics
+    super().__init__(*args, **kwargs)
 
   def generate_phase_screen(self):
     xp = self.grid.get_array_module()
@@ -59,9 +75,10 @@ class FFTPhaseScreen(PhaseScreen):
     return phase_screen - xp.mean(phase_screen)
   
 
-@dataclass
 class SSPhaseScreen(PhaseScreen):
-  f_grid: object = None
+  def __init__(self, f_grid, *args, **kwargs):
+    self.f_grid = f_grid
+    super().__init__(self, *args, **kwargs)
 
   def __post_init__(self):
     self._sqrt_int_spectrum = None
@@ -94,11 +111,10 @@ class SSPhaseScreen(PhaseScreen):
 
   
 
-@dataclass
 class SUPhaseScreen(PhaseScreen):
-  f_grid: object = None
-
-  def __post_init__(self):
+  def __init__(self, f_grid, *args, **kwargs):
+    self.f_grid = f_grid
+    super().__init__(*args, **kwargs)
     self._delta_k_base = None
   
   @property
@@ -121,13 +137,11 @@ class SUPhaseScreen(PhaseScreen):
     return xp.exp(1j * 2 * xp.pi * self.grid.get_y() @ fy.T) @ xp.diag(cn) @ xp.exp(1j * 2 * xp.pi * fx.T @ self.grid.get_x())
 
 
-@dataclass
 class WindSUPhaseScreen(PhaseScreen):
-  speed: float = 10
-  grid: object = None
-  f_grid: object = None
-
-  def __post_init__(self):
+  def __init__(self, f_grid, speed, *args, **kwargs):
+    self.f_grid = f_grid
+    self.speed = speed
+    super().__init__(*args, **kwargs)
     self.cnp = None
 
   def generate_cn(self):

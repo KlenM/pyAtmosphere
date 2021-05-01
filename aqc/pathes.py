@@ -30,9 +30,7 @@ class PhaseScreenPath:
 
   def init_phase_screens(self):
     for phase_screen in self.phase_screens:
-      if not phase_screen.grid:
-        phase_screen.grid = self.channel.grid
-      phase_screen.wvl = self.channel.source.wvl
+      phase_screen.channel = self.channel
 
   def output(self, input, return_intermediate=False):
     self.init_phase_screens()
