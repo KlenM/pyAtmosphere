@@ -1,10 +1,8 @@
 from dataclasses import dataclass
 
-from aqc.aqc import AQCElement
-
 
 @dataclass
-class CirclePupil(AQCElement):
+class CirclePupil:
   radius: float
 
   def output(self, input):

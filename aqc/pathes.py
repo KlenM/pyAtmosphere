@@ -3,12 +3,11 @@ import cupy
 import numpy as np
 import copy
 
-from aqc.aqc import AQCElement
 from aqc.theory.vacuum import vacuum_propagation
 
 
 @dataclass
-class VacuumPath(AQCElement):
+class VacuumPath:
   length: float
 
   def output(self, input, length=None):
@@ -24,7 +23,7 @@ class VacuumPath(AQCElement):
 
 
 @dataclass
-class PhaseScreenPath(AQCElement):
+class PhaseScreenPath:
   phase_screens: object
   losses_db: float = 0
 
@@ -43,7 +42,7 @@ class PhaseScreenPath(AQCElement):
     intermediate_results = []
     for phase_screen in self.phase_screens:
       vacuum_path = VacuumPath(phase_screen.thickness)
-      vacuum_path.set_channel(self.channel)
+      vacuum_path.channel = self.channel
       input = vacuum_path.output(sg * xp.exp(-1j * phase_screen.generate()) * input)
 
       if return_intermediate:

@@ -12,24 +12,34 @@ config = {
 }
 
 
-class AQCElement:
-  def set_channel(self, channel):
-    self.channel = channel
-
-
-@dataclass
-class AQC:
-  grid: AQCElement
-  source: AQCElement
-  path: AQCElement
-  pupil: AQCElement = None
-  use_GPU: bool = True
+class CrossRef:
+  def __init__(self, cross_ref_name):
+    self.cross_ref_name = cross_ref_name
+    
+  def __set_name__(self, obj, name):
+    self.privat_name = "_" + name
+    
+  def __get__(self, obj, type=None):
+    return getattr(obj, self.privat_name)
   
-  def __post_init__(self):
-    self.source.set_channel(self)
-    self.path.set_channel(self)
-    if self.pupil: 
-      self.pupil.set_channel(self)
+  def __set__(self, obj, value):
+    if not value:
+      return
+    setattr(obj, self.privat_name, value)
+    setattr(value, self.cross_ref_name, obj)
+
+
+class AQC:
+  grid = CrossRef("channel")
+  source = CrossRef("channel")
+  path = CrossRef("channel")
+  pupil = CrossRef("channel")
+  
+  def __init__(self, grid, source, path, pupil=None):
+    self.grid = grid
+    self.source = source
+    self.path = path
+    self.pupil = pupil
 
   def run(self, pupil=True, *args, **kwargs):
     if pupil:

@@ -1,12 +1,11 @@
 import numpy as np
 from dataclasses import dataclass
 
-from aqc.aqc import AQCElement
 from aqc.theory.sources import GaussianBeam
 
 
 @dataclass
-class Source(AQCElement):
+class Source:
   wvl: float
 
   @property

@@ -3,11 +3,11 @@ from dataclasses import dataclass
 import numpy as np
 import cupy
 
-from aqc.aqc import AQCElement, config
+from aqc.aqc import config
 
 
 @dataclass
-class Grid(AQCElement):
+class Grid:
   def get_array_module(self):
     return cupy if config["use_gpu"] else np
 
