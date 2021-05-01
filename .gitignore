@@ -1,2 +1,6 @@
 __pycache__/
+channels/
+.vscode/
+.ipynb_checkpoints/
 git.ipynb
+venv/
