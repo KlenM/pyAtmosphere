@@ -3,6 +3,7 @@ import cupy
 import numpy as np
 import copy
 
+from aqc.aqc import config
 from aqc.theory.vacuum import vacuum_propagation
 
 
@@ -37,13 +38,13 @@ class PhaseScreenPath:
     self.init_phase_screens()
 
     xp = cupy.get_array_module(input)
-    sg = xp.exp(-self.channel.grid.get_N2()**8 / (0.47 * np.min(self.channel.grid.resolution))**16)
+    sg = xp.exp(-self.channel.grid.get_N2()**8 / (0.47 * np.min(self.channel.grid.resolution))**16, dtype=config["dtype"]["float"])
     
     intermediate_results = []
     for phase_screen in self.phase_screens:
       vacuum_path = VacuumPath(phase_screen.thickness)
       vacuum_path.channel = self.channel
-      input = vacuum_path.output(sg * xp.exp(-1j * phase_screen.generate()) * input)
+      input = vacuum_path.output(sg * xp.exp(-1j * phase_screen.generate()) * input).astype(config["dtype"]["complex"])
 
       if return_intermediate:
         intermediate_results.append(input.copy())
