@@ -42,6 +42,15 @@ class AQC:
 
   def run(self, pupil=True, *args, **kwargs):
     if pupil:
-      return self.pupil.output(self.path.output(self.source.output(), *args, **kwargs))    
-    return self.path.output(self.source.output(), *args, **kwargs)
+      return self.pupil.output(self.path.output(self.source.output(), *args, **kwargs))
+    else:
+      return self.path.output(self.source.output(), *args, **kwargs)
   
+  def generator(self, pupil=True, store_output=True, *args, **kwargs):
+    self.output = None
+    if store_output:
+      path_output = yield from self.path.generator(self.source.output(), *args, **kwargs)
+      self.output = self.pupil.output(path_output) if pupil else path_output
+    else:
+      yield from self.path.generator(self.source.output(), *args, **kwargs)
+    

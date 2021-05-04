@@ -12,16 +12,16 @@ class AbstractPath(ABC):
   def __init__(self, length, losses_db=0):
     self.length = length
     self.losses_db = losses_db
-
-  def output(self, input, *args, **kwargs):
-    lossless_output = self.lossless_output(input, *args, **kwargs)    
-    if self.losses_db:
-      return lossless_output * 10**(-self.losses_db / 20)
-    return lossless_output
   
   @abstractmethod
   def lossless_output(self, input):
     pass
+
+  def append_losses(self, input):
+    return input * 10**(-self.losses_db / 20) if self.losses_db else input
+
+  def output(self, input, *args, **kwargs):
+    return self.append_losses(self.lossless_output(input, *args, **kwargs))
 
 
 class VacuumPath(AbstractPath):
@@ -50,23 +50,27 @@ class PhaseScreensPath(AbstractPath):
     for phase_screen in self.phase_screens:
       phase_screen.channel = self.channel
   
-  def lossless_output(self, input, return_intermediate=False):
+  def lossless_output(self, input):
+    generator = self.generator(input)
+    try:
+      while True:
+        next(generator)
+    except StopIteration as e:
+      return e.value
+  
+  def generator(self, input):
     xp = cupy.get_array_module(input)
     vacuum_path = VacuumPath(length=None)
     vacuum_path.channel = self.channel
     self.init_phase_screens()
-    intermediate_results = []
     
     for i, phase_screen in enumerate(self.phase_screens):
       vacuum_path.length = self.positions[i] - self.positions[i - 1] if i > 0 else self.positions[0]
-      input = xp.exp(-1j * phase_screen.generate()) * vacuum_path.output(input)
-      if return_intermediate:
-        intermediate_results.append(input.copy())
-    input = vacuum_path.output(input, length=self.length - self.positions[-1])
-    
-    if return_intermediate:
-      return input, return_intermediate
-    return input
+      generated_phase_screen = phase_screen.generate()
+      input = xp.exp(-1j * generated_phase_screen) * vacuum_path.output(input)
+      yield input, generated_phase_screen
+    return vacuum_path.output(input, length=self.length - self.positions[-1])
+      
     
 
 class IdenticalPhaseScreensPath(PhaseScreensPath):
