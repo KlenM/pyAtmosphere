@@ -1,15 +1,17 @@
+from typing import Literal
 from IPython import display
 from matplotlib import pyplot as plt
 
 
 class Simulation:
-  def __init__(self, print_skip=1, clear_plot=True):
-    self.iteration = 0
-    self.print_skip = print_skip
-    self.clear_plot = clear_plot
-    self.debug = None
+  type: Literal["output", "propagation", "phase_screen"] = None
+  iteration: int = 0
 
   def iter(self, *args, **kwargs):
+    self.process(*args, **kwargs)
+
+  def process(self, *args, **kwargs):
+    self.iteration += 1
     raise NotImplementedError
 
   def print(self):
@@ -21,31 +23,34 @@ class Simulation:
   def run(self, *args, **kwargs):
     try:
       while True:
-        self.iteration += 1
         self.iter(*args, **kwargs)
-        if self.iteration % self.print_skip == 0:
-          self._print()
+        self._print()
     except KeyboardInterrupt:
       pass
-    
-    try:
+    finally:
       self._final()
-    except NotImplementedError:
-      self._print()
 
-  def clear(self):
-    if self.clear_plot:
-      display.display(plt.gcf())
-    display.clear_output(wait=True)
-  
   def _print(self):
-    self.clear()
     self.print()
     print(f"Iteration: {self.iteration}")
-    if self.debug:
-      print(f"Debug info: {self.debug}")
+    display.clear_output(wait=True)
   
   def _final(self):
-    self.clear()
-    self.final()
+    try:
+      self.final()
+    except NotImplementedError:
+      self.print()
     print(f"Iterations: {self.iteration}")
+
+
+class SimulationGUI(Simulation):
+  def __init__(self, plot_skip=1, *args, **kwargs):
+    self.plot_skip = plot_skip
+    super().__init__(*args, **kwargs)
+  
+  def _print(self):
+    if self.iteration % self.plot_skip == 0:
+      self.print()
+      print(f"Iteration: {self.iteration}")
+      display.display(plt.gcf())
+      display.clear_output(wait=True)

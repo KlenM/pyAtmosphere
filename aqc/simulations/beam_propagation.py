@@ -1,22 +1,25 @@
 import numpy as np
+import cupy
 from matplotlib import pyplot as plt
 
-from aqc.simulations.simulation import Simulation
+from aqc.simulations.simulation import Simulation, SimulationGUI
 from aqc.measures import mean_r, mean_r2
 from aqc.theory.atmosphere.beam_wandering import get_r_bw
 from aqc.theory.atmosphere.long_term import get_numeric_w_LT
 
 
 class BeamPropagationSimulation(Simulation):
-  def __init__(self, channel, print_skip=30, clear_plot=True):
-    super().__init__(clear_plot=clear_plot, print_skip=print_skip)
+  type = "propagation"
+  
+  def __init__(self, channel, *args, **kwargs):
+    super().__init__(*args, **kwargs)
     self.channel = channel
-    self._bw2 = np.zeros(shape=(len(channel.path.phase_screens)))
-    self._lt2 = np.zeros(shape=(len(channel.path.phase_screens)))
-    self._st2 = np.zeros(shape=(len(channel.path.phase_screens)))
+    self._bw2 = np.zeros(shape=(len(channel.path.phase_screens) + 1))
+    self._lt2 = np.zeros(shape=(len(channel.path.phase_screens) + 1))
+    self._st2 = np.zeros(shape=(len(channel.path.phase_screens) + 1))
 
     self.bw_theoretical = [get_r_bw(L, self.channel.path.phase_screen.model, self.channel.source) for L in self.positions]
-    rho = self.channel.grid.get_x()[0, self.channel.grid.origin_index[0]::4].get()
+    rho = cupy.asnumpy(self.channel.grid.get_x()[0, self.channel.grid.origin_index[0]::4])
     w_LT = lambda L: get_numeric_w_LT(L, self.channel.path.phase_screen.model, self.channel.source.w0, self.channel.source.wvl, self.channel.source.F0, rho, self.channel.grid.delta)
     self.lt_theoretical = [w_LT(L) for L in self.positions]
   
@@ -34,22 +37,28 @@ class BeamPropagationSimulation(Simulation):
   
   @property
   def positions(self):
-    positions = np.empty(shape=(len(self.channel.path.phase_screens)))
-    for i, _ in enumerate(positions):
-      if i == 0:
-        positions[i] = self.channel.path.phase_screens[i].thickness
-      else:
-        positions[i] = positions[i - 1] + self.channel.path.phase_screens[i].thickness
-    return positions
+    return np.array(list(self.channel.path.positions) + [self.channel.path.length])
+
+  def process(self, propagation_result, propagation_step):
+    r = mean_r(self.channel, output=propagation_result)
+    r2 = mean_r2(self.channel, output=propagation_result)
+    self._bw2[propagation_step] += r**2
+    self._lt2[propagation_step] += 2 * r2
+    self._st2[propagation_step] += 2 * r2 - r**2
 
   def iter(self, *args, **kwargs):
-    r = mean_r(self.channel, return_intermediate=True, *args, **kwargs)
-    r2 = mean_r2(self.channel, return_intermediate=True, *args, **kwargs)
-    
-    self._bw2 += r**2
-    self._lt2 += 2 * r2
-    self._st2 += 2 * r2 - r**2
+    for propagation_step, (propagation_result, _) in enumerate(self.channel.generator(pupil=False, store_output=True, *args, **kwargs)):
+      self.process(propagation_result, propagation_step)
+    self.process(self.channel.output, len(self.channel.path.phase_screens))
+    self.iteration += 1
   
+  def print(self):
+    print(f"Beam wandering: {self.bw}")
+    print(f"Lont term: {self.lt}")
+    print(f"Short term: {self.st}")
+  
+  
+class BeamPropagationSimulationGUI(BeamPropagationSimulation, SimulationGUI):
   # def print(self):
   #   plt.plot(self.positions, self.bw, label=r"Beam wandering $\left<r_c\right>$, m")
   #   plt.plot(self.positions, self.lt, label=r"Long term $W_{LT}$, m")

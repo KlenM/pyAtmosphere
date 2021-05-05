@@ -1,18 +1,20 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from aqc.pupils import CirclePupil
-from aqc.simulations.simulation import Simulation
+from aqc.simulations.simulation import Simulation, SimulationGUI
 from aqc.measures import eta
 
 
 class EtaSimulation(Simulation):
-  def __init__(self, channel, radiuses, print_skip=5, clear_plot=True):
-    super().__init__(print_skip=print_skip, clear_plot=print_skip)
+  type = "output"
+  
+  def __init__(self, channel, radiuses, *args, **kwargs):
+    super().__init__(*args, **kwargs)
     self.channel = channel
     self.radiuses = radiuses
     self.pupils = [CirclePupil(radius=radius) for radius in radiuses]
     for pupil in self.pupils:
-      pupil.set_channel(channel)
+      pupil.channel = self.channel
 
     self._eta = np.zeros(len(radiuses))
     self._eta2 = np.zeros(len(radiuses))
@@ -28,22 +30,24 @@ class EtaSimulation(Simulation):
   @property
   def sigma_eta(self):
     return self._eta2 / self._eta**2 * self.iteration - 1
-
-  def run(self, *args, **kwargs):
-    init_pupil = self.channel.pupil
-    try:
-      super().run(*args, **kwargs)
-    finally:
-      self.channel.pupil = init_pupil
-
-  def iter(self, *args, **kwargs):
+  
+  def process(self, output):
     etas = np.empty(len(self.radiuses))
-    output = self.channel.run(pupil=False, *args, **kwargs)
     for i, pupil in enumerate(self.pupils):
       etas[i] = eta(self.channel, output=pupil.output(output))
     self._eta += etas
     self._eta2 += etas**2
+    
+  def iter(self, *args, **kwargs):
+    self.process(self.channel.run(pupil=False, *args, **kwargs))
+    self.iteration += 1
 
+  def print(self):
+    print(f"Eta: {self.eta}")
+    print(f"Sigma eta: {self.sigma_eta}")
+
+
+class EtaSimulationGUI(EtaSimulation, SimulationGUI):
   def print(self):
     plt.plot(self.radiuses, self.eta)
     plt.plot(self.radiuses, self.sigma_eta)
