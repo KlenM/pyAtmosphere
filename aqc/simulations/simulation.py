@@ -1,10 +1,14 @@
-from typing import Literal
+import sys
 from IPython import display
 from matplotlib import pyplot as plt
+if sys.version_info >= (3, 8):
+    from typing import Literal
+else:
+    from typing_extensions import Literal
 
 
 class Simulation:
-  type: Literal["output", "propagation", "phase_screen"] = None
+  type: Literal["output", "propagation", "phase_screen"]
   iteration: int = 0
 
   def iter(self, *args, **kwargs):
