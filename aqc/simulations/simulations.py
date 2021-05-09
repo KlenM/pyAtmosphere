@@ -31,8 +31,10 @@ class Simulations:
 
 
 class SimulationsGUI(Simulations):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, plot_skip: int = 1, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.plot_skip = plot_skip
+        self.iteration = 0
         self.simulations_dropdown = widgets.Dropdown(
             options=[(type(simulation).__name__, i)for i, simulation in enumerate(self.simulations)],
             value=0,
@@ -40,16 +42,19 @@ class SimulationsGUI(Simulations):
             )
 
     def update_display(self):
-        display.display(self.simulations_dropdown)
-        active_simulation = self.simulations_dropdown.value
-        if self.simulations[active_simulation].iteration > 0:
-            self.simulations[active_simulation].print()
-        display.clear_output(wait=True)
+        if self.iteration % self.plot_skip == 0:
+            display.display(self.simulations_dropdown)
+            active_simulation = self.simulations_dropdown.value
+            if self.simulations[active_simulation].iteration > 0:
+                self.simulations[active_simulation].print()
+            print(f"Iteration: {self.iteration}")
+            display.clear_output(wait=True)
 
     def run(self):
         self.update_display()
         with ui_events() as poll:
             while True:
                 self.iter()
+                self.iteration += 1
                 poll(1)
                 self.update_display()

@@ -17,8 +17,9 @@ class AbstractPath(ABC):
   def lossless_output(self, input):
     pass
 
-  def append_losses(self, input):
-    return input * 10**(-self.losses_db / 20) if self.losses_db else input
+  def append_losses(self, input, losses_db=None):
+    losses_db = losses_db or self.losses_db 
+    return input * 10**(-losses_db / 20) if losses_db else input
 
   def output(self, input, *args, **kwargs):
     return self.append_losses(self.lossless_output(input, *args, **kwargs))
@@ -67,7 +68,8 @@ class PhaseScreensPath(AbstractPath):
     for i, phase_screen in enumerate(self.phase_screens):
       vacuum_path.length = self.positions[i] - self.positions[i - 1] if i > 0 else self.positions[0]
       generated_phase_screen = phase_screen.generate()
-      input = xp.exp(-1j * generated_phase_screen) * vacuum_path.output(input)
+      part_losses_db = self.losses_db * vacuum_path.length / self.length
+      input = self.append_losses(xp.exp(-1j * generated_phase_screen) * vacuum_path.output(input), losses_db=part_losses_db)
       yield input, generated_phase_screen
     return vacuum_path.output(input, length=self.length - self.positions[-1])
       
