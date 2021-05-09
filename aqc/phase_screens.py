@@ -1,9 +1,18 @@
 import numpy as np
 from scipy.integrate import quad
+from dataclasses import dataclass
+from typing import Sequence
 
 from aqc.aqc import config
 from aqc.grid import RectGrid
 from aqc.utils import ifft2
+
+
+@dataclass
+class PolarDiscreteFunction():
+  rho: Sequence[float]
+  theta: Sequence[float]
+  value: Sequence[float]
 
 
 class Default:
@@ -24,23 +33,21 @@ class PhaseScreen():
   def __init__(self, model, thickness=None, wvl=None, grid=None):
     self.model = model
     self.thickness = thickness
-    if wvl: 
-      self.wvl = wvl
-    if grid:
-      self.grid = grid
+    self.wvl = wvl
+    self.grid = grid
 
   def generate_phase_screen(self):
     """Return complex phase screen"""
     raise NotImplementedError
 
-  def generate(self, complex=False):
+  def generate(self, complex=False, *args, **kwargs):
     if complex:
-      return self.generate_phase_screen()
-    return self.generate_phase_screen().real
+      return self.generate_phase_screen(*args, **kwargs)
+    return self.generate_phase_screen(*args, **kwargs).real
   
   def generator(self):
     while True:
-      ps = self.generate(complex=True)
+      ps = self.generate(complex=True, *args, **kwargs)
       yield ps.real
       yield ps.imag
   
@@ -73,42 +80,60 @@ class FFTPhaseScreen(PhaseScreen):
           phase_screen = phase_screen + cn[i,j] * xp.exp(1j * 2 * xp.pi * (f[0, i] * self.grid.get_x() + f[0, j] * self.grid.get_y()))
     
     return phase_screen - xp.mean(phase_screen)
-  
+
 
 class SSPhaseScreen(PhaseScreen):
   def __init__(self, f_grid, *args, **kwargs):
+    super().__init__(*args, **kwargs)
     self.f_grid = f_grid
-    super().__init__(self, *args, **kwargs)
-
-  def __post_init__(self):
-    self._sqrt_int_spectrum = None
+    self._psd = None
+    self._cached_spectrum: PolarDiscreteFunction = None
   
-  @property
-  def sqrt_int_spectrum(self):
-    if not self._sqrt_int_spectrum is None:
-      return self._sqrt_int_spectrum
-    
+  def _get_psd(self):
+    if self._psd is not None:
+      return self._psd
     xp = self.grid.get_array_module()
     f = self.f_grid.base
-    self._sqrt_int_spectrum = xp.empty(self.f_grid.points)
     in_int_function = lambda f: (2 * np.pi)**2 * f * self.model.psd_phi_f(f, 2 * xp.pi / self.wvl, self.thickness)
+    self._psd = xp.array([2 * np.pi * quad(in_int_function, f[i - 1] if i != 0 else 0, f[i])[0] for i in range(self.f_grid.points)], dtype=config["dtype"]["float"])
+    return self._psd
 
-    for i in range(self.f_grid.points):
-      f_prev = f[i - 1] if i != 0 else 0
-      self._sqrt_int_spectrum[i] = xp.sqrt(2 * np.pi * quad(in_int_function, f_prev, f[i])[0])
-    
-    return self._sqrt_int_spectrum
+  def _get_spectrum(self, use_cached_spectrum):
+    xp = self.grid.get_array_module()
+    if use_cached_spectrum and self._cached_spectrum:
+      return self._cached_spectrum
+    else:
+      spectrum = PolarDiscreteFunction(
+          rho=self.f_grid.get_rho(),
+          theta=self.f_grid.get_theta(),
+          value=(xp.array([1, 1j]) @ xp.random.normal(size=(2, self.f_grid.points))).astype(config["dtype"]["complex"]) * xp.sqrt(self._get_psd())
+        )
+      if use_cached_spectrum and not self._cached_spectrum:
+        self._cached_spectrum = spectrum
+      return spectrum
+
+  def generate_phase_screen(self, shift: tuple[float, float] = (0, 0), use_cached_spectrum: bool = False):
+    xp = self.grid.get_array_module()
+    spectrum = self._get_spectrum(use_cached_spectrum)
+    fx, fy = self.f_grid.get_xy(spectrum.rho, spectrum.theta)
+    x = self.grid.get_x() + shift [0]
+    y = self.grid.get_y() + shift[1]
+    return xp.exp(1j * 2 * xp.pi * y @ fy.T) @ xp.diag(spectrum.value) @ xp.exp(1j * 2 * xp.pi * fx.T @ x)
+
+
+class WindSSPhaseScreen(SSPhaseScreen):
+  def __init__(self, wind_speed: float, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self.wind_speed = wind_speed
+    self.time = 0
+
+  def generate_spectrum(self):
+    self._cached_spectrum = None
 
   def generate_phase_screen(self):
-    xp = self.grid.get_array_module()
-    
-    cn = (xp.array([1, 1j]) @ xp.random.normal(size=(2, self.f_grid.points))).astype(config["dtype"]["complex"]) * self.sqrt_int_spectrum
-
-    rho = self.f_grid.get_rho()
-    theta = self.f_grid.get_theta()
-    fx, fy = self.f_grid.get_xy(rho, theta)
-    return xp.exp(1j * 2 * xp.pi * self.grid.get_y() @ fy.T) @ xp.diag(cn) @ xp.exp(1j * 2 * xp.pi * fx.T @ self.grid.get_x())
-
+    shift = (self.time * self.wind_speed, 0)
+    self.time += 1
+    return super().generate_phase_screen(shift=shift, use_cached_spectrum=True)
   
 
 class SUPhaseScreen(PhaseScreen):
