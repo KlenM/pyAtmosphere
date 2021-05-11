@@ -19,7 +19,7 @@ class SFSimulation(Simulation):
     self.phase_screen_generator = self.channel.path.phase_screen.generator()
     self._sf_unnormed = xp.zeros((phase_screen_resolution - 1, ))
     self.r = np.linspace(0, phase_screen_delta * phase_screen_resolution, phase_screen_resolution)[:-1]
-    self.theoretical_sf = self.get_theoretical_sf()
+    # self.theoretical_sf = self.get_theoretical_sf()
     self.numerical_theoretical_sf = self.get_numerical_theoretical_sf()
 
   @property

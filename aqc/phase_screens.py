@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.integrate import quad
 from dataclasses import dataclass
-from typing import Sequence
+from typing import Tuple, Sequence
 
 from aqc.aqc import config
 from aqc.grid import RectGrid
@@ -33,8 +33,10 @@ class PhaseScreen():
   def __init__(self, model, thickness=None, wvl=None, grid=None):
     self.model = model
     self.thickness = thickness
-    self.wvl = wvl
-    self.grid = grid
+    if wvl:
+      self.wvl = wvl
+    if grid:
+      self.grid = grid
 
   def generate_phase_screen(self):
     """Return complex phase screen"""
@@ -45,7 +47,7 @@ class PhaseScreen():
       return self.generate_phase_screen(*args, **kwargs)
     return self.generate_phase_screen(*args, **kwargs).real
   
-  def generator(self):
+  def generator(self, *args, **kwargs):
     while True:
       ps = self.generate(complex=True, *args, **kwargs)
       yield ps.real
@@ -112,7 +114,7 @@ class SSPhaseScreen(PhaseScreen):
         self._cached_spectrum = spectrum
       return spectrum
 
-  def generate_phase_screen(self, shift: tuple[float, float] = (0, 0), use_cached_spectrum: bool = False):
+  def generate_phase_screen(self, shift: Tuple[float, float] = (0, 0), use_cached_spectrum: bool = False):
     xp = self.grid.get_array_module()
     spectrum = self._get_spectrum(use_cached_spectrum)
     fx, fy = self.f_grid.get_xy(spectrum.rho, spectrum.theta)
