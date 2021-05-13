@@ -14,7 +14,7 @@ class AbstractPath(ABC):
     self.losses_db = losses_db
   
   @abstractmethod
-  def lossless_output(self, input):
+  def lossless_output(self, input, *args, **kwargs):
     pass
 
   def append_losses(self, input, losses_db=None):
@@ -51,15 +51,15 @@ class PhaseScreensPath(AbstractPath):
     for phase_screen in self.phase_screens:
       phase_screen.channel = self.channel
   
-  def lossless_output(self, input):
-    generator = self.generator(input)
+  def lossless_output(self, input, *args, **kwargs):
+    generator = self.generator(input, *args, **kwargs)
     try:
       while True:
         next(generator)
     except StopIteration as e:
       return e.value
   
-  def generator(self, input):
+  def generator(self, input, *args, **kwargs):
     xp = cupy.get_array_module(input)
     vacuum_path = VacuumPath(length=None)
     vacuum_path.channel = self.channel
@@ -67,7 +67,7 @@ class PhaseScreensPath(AbstractPath):
     
     for i, phase_screen in enumerate(self.phase_screens):
       vacuum_path.length = self.positions[i] - self.positions[i - 1] if i > 0 else self.positions[0]
-      generated_phase_screen = phase_screen.generate()
+      generated_phase_screen = phase_screen.generate(*args, **kwargs)
       part_losses_db = self.losses_db * vacuum_path.length / self.length
       input = self.append_losses(xp.exp(-1j * generated_phase_screen) * vacuum_path.output(input), losses_db=part_losses_db)
       yield input, generated_phase_screen
