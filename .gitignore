@@ -4,3 +4,4 @@ channels/
 .ipynb_checkpoints/
 git.ipynb
 venv/
+.mypy_cache/
