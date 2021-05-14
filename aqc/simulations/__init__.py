@@ -1,7 +1,8 @@
-from .simulation import Simulation, SimulationGUI
+from .simulation import Simulation
+from .simulations import Simulations
 
-from .beam_propagation import BeamPropagationSimulation, BeamPropagationSimulationGUI
-from .eta import EtaSimulation, EtaSimulationGUI
-from .pdt import PDTSimulation, PDTSimulationGUI
-from .sf import SFSimulation, SFSimulationGUI
-from .si import SISimulation, SISimulationGUI
+from .beam_propagation import BeamPropagationSimulation
+from .eta import EtaSimulation
+from .pdt import PDTSimulation
+from .sf import SFSimulation
+from .si import SISimulation

@@ -1,3 +1,5 @@
+from numpy import isin
+from aqc.simulations.simulation import OutputSimulation, PhaseScreenSimulation, PropagationSimulation, PupilSimulation
 from IPython import display
 import ipywidgets as widgets
 from jupyter_ui_poll import ui_events
@@ -11,18 +13,20 @@ class Simulations:
     def iter(self):
         for propagation_step, (propagation_result, phase_screen) in enumerate(self.channel.generator(pupil=False, store_output=True)):
             for simulation in self.simulations:
-                if simulation.type == "phase_screen":
-                    simulation.process(phase_screen, propagation_step)
+                if isinstance(simulation, PhaseScreenSimulation):
+                    simulation.process_phase_screen(phase_screen)
                     simulation.iteration += 1
-                elif simulation.type == "propagation":
-                    simulation.process(propagation_result, propagation_step)
+                elif isinstance(simulation, PropagationSimulation):
+                    simulation.process_propagation(propagation_result, propagation_step)
         for simulation in self.simulations:
-            if simulation.type == "output":
-                simulation.process(self.channel.output)
-            if simulation.type == "pupil":
-                simulation.process(self.channel.pupil.output(self.channel.output))
+            if isinstance(simulation, PropagationSimulation):
+                simulation.process_propagation(self.channel.output, len(self.channel.path.phase_screens))
+            elif isinstance(simulation, OutputSimulation):
+                simulation.process_output(self.channel.output)
+            elif isinstance(simulation, PupilSimulation):
+                simulation.process_pupil(self.channel.pupil.output(self.channel.output))
 
-            if simulation.type != "phase_screen":
+            if not isinstance(simulation, PhaseScreenSimulation):
                 simulation.iteration += 1
 
     def run(self):
@@ -46,7 +50,7 @@ class SimulationsGUI(Simulations):
             display.display(self.simulations_dropdown)
             active_simulation = self.simulations_dropdown.value
             if self.simulations[active_simulation].iteration > 0:
-                self.simulations[active_simulation].print()
+                self.simulations[active_simulation].plot_output()
             print(f"Iteration: {self.iteration}")
             display.clear_output(wait=True)
 

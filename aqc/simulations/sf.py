@@ -1,14 +1,13 @@
 import cupy
 import numpy as np
 from matplotlib import pyplot as plt
+from IPython.display import display
 
-from aqc.simulations.simulation import Simulation, SimulationGUI
+from aqc.simulations.simulation import PhaseScreenSimulation
 from aqc.theory.phase_screens.sf import calculate_sf
 
 
-class SFSimulation(Simulation):
-  type = "phase_screen"
-  
+class SFSimulation(PhaseScreenSimulation):
   def __init__(self, channel, *args, **kwargs):
     super().__init__(*args, **kwargs)
     self.channel = channel
@@ -35,19 +34,16 @@ class SFSimulation(Simulation):
     return self.channel.path.phase_screen.model.sf_phi_numeric(self.r, k, self.channel.path.phase_screen.thickness)
 
   def iter(self, *args, **kwargs):
-    self.process(next(self.phase_screen_generator))
-    self.iteration += 1
+    self.process_phase_screen(next(self.phase_screen_generator))
   
-  def process(self, phase_screen, propagation_step=None):
+  def process_phase_screen(self, phase_screen, propagation_step=None):
     self._sf_unnormed[:] = self._sf_unnormed + calculate_sf(phase_screen).mean(axis=1)
 
-  def print(self):
-    print("Mean square error = {NOT IMPLEMENTED}")
+  def print_output(self):
     print(self.sf)
   
-
-class SFSimulationGUI(SFSimulation, SimulationGUI):
-  def print(self):
+  def plot_output(self):
+    plt.clf()
     plt.plot(self.r, cupy.asnumpy(self.sf), label="Simulated")
     # plt.plot(self.r, cupy.asnumpy(self.theoretical_sf), label="Theoretical")
     plt.plot(self.r, cupy.asnumpy(self.numerical_theoretical_sf), label="Theoretical numerical")

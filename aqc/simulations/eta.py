@@ -1,13 +1,11 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from aqc.pupils import CirclePupil
-from aqc.simulations.simulation import Simulation, SimulationGUI
+from aqc.simulations.simulation import OutputSimulation
 from aqc.measures import eta
 
 
-class EtaSimulation(Simulation):
-  type = "output"
-  
+class EtaSimulation(OutputSimulation):
   def __init__(self, channel, radiuses, *args, **kwargs):
     super().__init__(*args, **kwargs)
     self.channel = channel
@@ -30,30 +28,23 @@ class EtaSimulation(Simulation):
   @property
   def sigma_eta(self):
     return self._eta2 / self._eta**2 * self.iteration - 1
+    
+  def iter(self, *args, **kwargs):
+    self.process(self.channel.run(pupil=False, *args, **kwargs))
+    self.iteration += 1
   
-  def process(self, output):
+  def process_output(self, output):
     etas = np.empty(len(self.radiuses))
     for i, pupil in enumerate(self.pupils):
       etas[i] = eta(self.channel, output=pupil.output(output))
     self._eta += etas
     self._eta2 += etas**2
-    
-  def iter(self, *args, **kwargs):
-    self.process(self.channel.run(pupil=False, *args, **kwargs))
-    self.iteration += 1
 
-  def print(self):
+  def print_output(self):
     print(f"Eta: {self.eta}")
     print(f"Sigma eta: {self.sigma_eta}")
 
-
-class EtaSimulationGUI(EtaSimulation, SimulationGUI):
-  def print(self):
-    plt.plot(self.radiuses, self.eta)
-    plt.plot(self.radiuses, self.sigma_eta)
-    plt.show()
-
-  def final(self):
+  def plot_output(self):
     plt.figure(figsize=(10,6))
     plt.title("Залежність коефіцієнта проходження та апертурного сцинтиляційного індекса\nвід радіуса апертури")
     plt.plot(self.radiuses, self.eta, label='Середній коефіцієнт проходження $\\left< \eta \\right>$')
