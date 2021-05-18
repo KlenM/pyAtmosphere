@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from typing import Callable, Sequence
+from pathlib import Path
 from IPython import display
 from matplotlib import pyplot as plt
 
@@ -21,6 +22,7 @@ class Simulation(ABC):
     self.plot_step = plot_step
     self.save_step = save_step
     self.save_path = save_path
+    Path(self.save_path).mkdir(parents=True, exist_ok=True)
     self.output_function = output_function
 
   def run(self, *args, **kwargs):
