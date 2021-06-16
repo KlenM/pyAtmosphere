@@ -5,5 +5,9 @@ from dataclasses import dataclass
 class CirclePupil:
   radius: float
 
+  def get_pupil(self, shift=(0, 0)):
+    x, y = self.channel.grid.get_xy()
+    return ((x - shift[0])**2 + (y + shift[1])**2 <= (self.radius)**2)
+
   def output(self, input):
-    return input * (self.channel.grid.get_rho2() <= (self.radius)**2)
+    return input * self.get_pupil()
