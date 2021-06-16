@@ -70,7 +70,7 @@ class RectGrid(Grid):
     return self.get_x(), self.get_y()
 
   def get_rho2(self):
-    y, x = self.get_xy()
+    x, y = self.get_xy()
     return x**2 + y**2
   
   def get_rho(self):
