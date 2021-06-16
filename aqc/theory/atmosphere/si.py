@@ -63,6 +63,27 @@ def get_SI_andrews_strong_zeroscale(length, model, gaussian_beam, debug=False):
   SlnY2 = 0.51 * SB2 / (1 + 0.69 * SB2**(6 / 5))**(5 / 6)
   return np.exp(SlnX2 + SlnY2) - 1
 
+def get_SI_chan_zhang(length, model, gaussian_beam):
+    def SI2(SR2, A, theta, Spe2, W):
+        under_re = 1j**(5/6) * hyp2f1(-5/6, 11/6, 17/6, 1 - theta + 1j * A)
+        return 3.86 * SR2 * np.real(under_re) - 2.64 * SR2 * A**(5/6) * hyp1f1(-5/6, 1, 2 * Spe2 / W**2)
+
+    def Spe2(rce2_m, W0, r0sp2):
+        Cr = 1.5 * np.pi
+        return rce2_m * (1 - ((Cr**2 * W0**2 / r0sp2) / (1 + Cr**2 * W0**2 / r0sp2))**(1/6))
+
+    def r0sp2(k, Cn2, L):
+        return (0.16 * k**2 * Cn2 * L)**(-3/5)
+
+    def rce2_m(Cn2, L, W0, F0):
+        return 2.42 * Cn2 * L**3 * W0**(-1/3) * hyp2f1(1/3, 1, 4, L/F0)
+    
+    rce2_m_val = rce2_m(model.Cn2, length, gaussian_beam.w0, gaussian_beam.F0)
+    r0sp2_val = r0sp2(gaussian_beam.k, model.Cn2, length)
+    Spe2_val = Spe2(rce2_m_val, gaussian_beam.w0, r0sp2_val)
+    SR2 = get_rytov2(model.Cn2, gaussian_beam.k, length)
+    return SI2(SR2, gaussian_beam.get_Lambda(length), gaussian_beam.get_theta(length), Spe2_val, gaussian_beam.get_w(length))
+    
 
 def get_SI_andrews_strong(length, model, gaussian_beam, debug=False):
   """
