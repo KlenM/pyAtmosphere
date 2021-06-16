@@ -1,3 +1,4 @@
+import cupy
 import numpy as np
 from scipy.integrate import quad
 from dataclasses import dataclass
@@ -89,8 +90,13 @@ class SSPhaseScreen(PhaseScreen):
     super().__init__(*args, **kwargs)
     self.f_grid = f_grid
     self._psd = None
-    self._cached_spectrum: PolarDiscreteFunction = None
+    self.cache_clear()
   
+  def cache_clear(self):
+    self._cached_spectrum: PolarDiscreteFunction = None
+    self._cached_phase_screen = None
+    self._cached_phase_screen_shift = 0
+
   def _get_psd(self):
     if self._psd is not None:
       return self._psd
@@ -114,14 +120,33 @@ class SSPhaseScreen(PhaseScreen):
         self._cached_spectrum = spectrum
       return spectrum
 
-  def generate_phase_screen(self, shift: Tuple[float, float] = (0, 0), use_cached_spectrum: bool = False):
+  def generate_phase_screen(self, shift: Tuple[float, float] = (0, 0), wind: bool = False):
     xp = self.grid.get_array_module()
-    spectrum = self._get_spectrum(use_cached_spectrum)
+    spectrum = self._get_spectrum(use_cached_spectrum=wind)
     fx, fy = self.f_grid.get_xy(spectrum.rho, spectrum.theta)
     x = self.grid.get_x() + shift [0]
     y = self.grid.get_y() + shift[1]
-    return xp.exp(1j * 2 * xp.pi * y @ fy.T) @ xp.diag(spectrum.value) @ xp.exp(1j * 2 * xp.pi * fx.T @ x)
-
+    
+    ## Using part of the cached screen if possible
+    cached_edge_index = 0
+    if wind and shift[1]==0 and self._cached_phase_screen is not None and shift[0] >= self._cached_phase_screen_shift and\
+        (self._cached_phase_screen_shift + self.grid.size[0] > shift[0]):
+      cached_edge_index = ((self._cached_phase_screen_shift + self.grid.size[0]) - shift[0]) // self.grid.delta
+      x = x[:, cached_edge_index:]
+#       print(f"cached shift: {self._cached_phase_screen_shift}, Shift: {shift[0]}")
+#       print(f"Split edge: {cached_edge_index}")
+  
+    phase_screen = spectrum.value * xp.exp(1j * 2 * xp.pi * y @ fy.T) @ xp.exp(1j * 2 * xp.pi * fx.T @ x)
+    
+    if cached_edge_index:
+#         print(self._cached_phase_screen[:, self.grid.resolution[0] - cached_edge_index:].shape, phase_screen.shape)
+        phase_screen = cupy.append(self._cached_phase_screen[:, self.grid.resolution[0] - cached_edge_index:], phase_screen, axis=1)
+    
+    if wind:
+      self._cached_phase_screen = phase_screen
+      self._cached_phase_screen_shift = shift[0]
+    return phase_screen
+    
 
 class WindSSPhaseScreen(SSPhaseScreen):
   def __init__(self, wind_speed: float, *args, **kwargs):
