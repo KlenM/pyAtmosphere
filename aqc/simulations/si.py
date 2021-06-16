@@ -22,9 +22,8 @@ class SISimulation(PropagationSimulation):
 
   def iter(self, *args, **kwargs):
     for propagation_step, (propagation_result, _) in enumerate(self.channel.generator(pupil=False, store_output=True, *args, **kwargs)):
-      self.process(propagation_result, propagation_step)
-    self.process(self.channel.output, len(self.channel.path.phase_screens))
-    self.iteration += 1
+      self.process_propagation(propagation_result, propagation_step)
+    self.process_propagation(self.channel.output, len(self.channel.path.phase_screens))
   
   def process_propagation(self, propagation_output, propagation_step):
     I_0 = abs(propagation_output[self.channel.grid.origin_index[0], self.channel.grid.origin_index[1]])**2

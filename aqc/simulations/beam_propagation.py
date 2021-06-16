@@ -41,7 +41,6 @@ class BeamPropagationSimulation(PropagationSimulation):
     for propagation_step, (propagation_result, _) in enumerate(self.channel.generator(pupil=False, store_output=True, *args, **kwargs)):
       self.process_propagation(propagation_result, propagation_step)
     self.process_propagation(self.channel.output, len(self.channel.path.phase_screens))
-    self.iteration += 1
 
   def process_propagation(self, propagation_result, propagation_step):
     r = mean_r(self.channel, output=propagation_result)

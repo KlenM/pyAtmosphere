@@ -31,7 +31,6 @@ class EtaSimulation(OutputSimulation):
     
   def iter(self, *args, **kwargs):
     self.process(self.channel.run(pupil=False, *args, **kwargs))
-    self.iteration += 1
   
   def process_output(self, output):
     etas = np.empty(len(self.radiuses))

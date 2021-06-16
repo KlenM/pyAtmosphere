@@ -12,7 +12,6 @@ class PDTSimulation(OutputSimulation):
   
   def iter(self, *args, **kwargs):
     self.process_output(self.channel.run(pupil=True))
-    self.iteration += 1
   
   def process_output(self, output):
     self.etas.append(eta(self.channel, output=output))
