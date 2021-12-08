@@ -1,28 +1,9 @@
 import numpy as np
 from scipy.integrate import quad
-from dataclasses import dataclass
-from typing import Tuple, Sequence
+from typing import Tuple
 
 from pyatmosphere.grids import RectGrid
-from pyatmosphere.utils import ifft2
-
-
-@dataclass
-class PolarDiscreteFunction():
-    rho: Sequence[float]
-    theta: Sequence[float]
-    value: Sequence[float]
-
-
-class Default:
-    def __init__(self, default_path):
-        self._default_path_list = default_path.split(".")
-
-    def __get__(self, obj, cls):
-        current_node = obj
-        for node in self._default_path_list:
-            current_node = getattr(current_node, node)
-        return current_node
+from pyatmosphere.utils import Default, PolarDiscreteFunction, ifft2
 
 
 class PhaseScreen():

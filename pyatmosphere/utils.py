@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+from typing import Sequence
+
 from pyatmosphere.gpu import get_xp
 
 
@@ -16,6 +19,24 @@ class CrossRef:
             return
         setattr(obj, self.privat_name, value)
         setattr(value, self.cross_ref_name, obj)
+
+
+class Default:
+    def __init__(self, default_path):
+        self._default_path_list = default_path.split(".")
+
+    def __get__(self, obj, cls):
+        current_node = obj
+        for node in self._default_path_list:
+            current_node = getattr(current_node, node)
+        return current_node
+
+
+@dataclass
+class PolarDiscreteFunction():
+    rho: Sequence[float]
+    theta: Sequence[float]
+    value: Sequence[float]
 
 
 def fft2(x, delta):
