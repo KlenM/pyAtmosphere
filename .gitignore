@@ -5,3 +5,6 @@ channels/
 git.ipynb
 venv/
 .mypy_cache/
+simulations_/
+tmp/
+research/

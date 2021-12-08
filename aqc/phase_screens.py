@@ -124,12 +124,12 @@ class SSPhaseScreen(PhaseScreen):
     xp = self.grid.get_array_module()
     spectrum = self._get_spectrum(use_cached_spectrum=wind)
     fx, fy = self.f_grid.get_xy(spectrum.rho, spectrum.theta)
-    x = self.grid.get_x() + shift [0]
+    x = self.grid.get_x() + shift[0]
     y = self.grid.get_y() + shift[1]
     
     ## Using part of the cached screen if possible
     cached_edge_index = 0
-    if wind and shift[1]==0 and self._cached_phase_screen is not None and shift[0] >= self._cached_phase_screen_shift and\
+    if wind and shift[1] == 0 and self._cached_phase_screen is not None and shift[0] >= self._cached_phase_screen_shift and\
         (self._cached_phase_screen_shift + self.grid.size[0] > shift[0]):
       cached_edge_index = ((self._cached_phase_screen_shift + self.grid.size[0]) - shift[0]) // self.grid.delta
       x = x[:, cached_edge_index:]

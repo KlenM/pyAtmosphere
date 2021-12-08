@@ -27,6 +27,10 @@ class RectGrid(Grid):
     return np.array(self.resolution) * self.delta
   
   @property
+  def extent(self):
+    return np.array([self._left_bound, self._right_bound, self._top_bound, self._bottom_bound]) * self.delta
+
+  @property
   def shape(self):
     return self.resolution
 
@@ -64,7 +68,7 @@ class RectGrid(Grid):
 
   def get_y(self):
     xp = self.get_array_module()
-    return xp.arange(self._top_bound, self._bottom_bound, dtype=config["dtype"]["float"]).reshape((-1,1)) * self.delta
+    return xp.arange(self._top_bound, self._bottom_bound, dtype=config["dtype"]["float"]).reshape((-1, 1)) * self.delta
   
   def get_xy(self):
     return self.get_x(), self.get_y()
@@ -117,18 +121,18 @@ class RandLogPolarGrid(Grid):
     xp = self.get_array_module()
     return (rho * xp.cos(theta)).reshape((1, -1)), (rho * xp.sin(theta)).reshape((-1, 1))
 
-  def plot(self):
-    lim = self.f_min * 10
-    lim = self.f_max
+  # def plot(self):
+  #   lim = self.f_min * 10
+  #   lim = self.f_max
 
-    plt.figure(figsize=(8,8))
-    plt.xlim((-lim,lim))
-    plt.ylim((-lim,lim))
-    c = plt.Circle((0,0), self.f_min, fill=False)
-    plt.gca().add_patch(c)
-    c = plt.Circle((0,0), self.f_max, fill=False)
-    plt.gca().add_patch(c)
-    for i in range(3):
-      q = grid.get_xy()
-      plt.scatter(q[0].get(), q[1].T.get(), s=8)
+  #   plt.figure(figsize=(8,8))
+  #   plt.xlim((-lim,lim))
+  #   plt.ylim((-lim,lim))
+  #   c = plt.Circle((0,0), self.f_min, fill=False)
+  #   plt.gca().add_patch(c)
+  #   c = plt.Circle((0,0), self.f_max, fill=False)
+  #   plt.gca().add_patch(c)
+  #   for i in range(3):
+  #     q = grid.get_xy()
+  #     plt.scatter(q[0].get(), q[1].T.get(), s=8)
   

@@ -9,5 +9,5 @@ class CirclePupil:
     x, y = self.channel.grid.get_xy()
     return ((x - shift[0])**2 + (y + shift[1])**2 <= (self.radius)**2)
 
-  def output(self, input):
-    return input * self.get_pupil()
+  def output(self, input, **kwargs):
+    return input * self.get_pupil(**kwargs)
