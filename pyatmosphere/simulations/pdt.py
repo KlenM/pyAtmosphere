@@ -4,7 +4,7 @@ from functools import partial, lru_cache
 
 from pyatmosphere.measures import eta, mean_x, mean_y
 
-from .simulation import Measures
+from .measure import Measure
 from .result import Result
 
 
@@ -13,7 +13,7 @@ class PDTResult(Result):
         self.pupil_shift = (0, 0)
         self.pupils = pupils or [channel.pupil]
         measures = kwargs.pop("measures", [
-            Measures(channel, "atmosphere", partial(
+            Measure(channel, "atmosphere", partial(
                 self.append_pupil, pupil), eta, name=f"{pupil.radius}")
             for pupil in self.pupils])
         super().__init__(channel, measures, **kwargs)
@@ -51,10 +51,10 @@ class PDTResult(Result):
 class TrackedPDTResult(PDTResult):
     def __init__(self, channel, pupils: list = None, **kwargs):
         pupils = pupils or [channel.pupil]
-        beam_measures = [Measures(channel, "atmosphere", mean_x), Measures(
+        beam_measures = [Measure(channel, "atmosphere", mean_x), Measure(
             channel, "atmosphere", mean_y)]
         pdt_measures = [
-            Measures(channel, "atmosphere", self.set_pupil_position, partial(
+            Measure(channel, "atmosphere", self.set_pupil_position, partial(
                 self.append_pupil, pupil), eta, name=f"{pupil.radius}")
             for pupil in pupils]
         super().__init__(channel, pupils=pupils,

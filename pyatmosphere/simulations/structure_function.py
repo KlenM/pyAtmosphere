@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 from pyatmosphere.theory.phase_screens.sf import calculate_sf
 from pyatmosphere.gpu import get_array
 
-from .simulation import Measures
+from .measure import Measure
 from .result import Result
 
 
@@ -14,7 +14,7 @@ def calculate_structure_function(channel, output):
 
 class StructureFunctionResult(Result):
     def __init__(self, channel, *args, **kwargs):
-        measures = [Measures(channel, "phase_screen",
+        measures = [Measure(channel, "phase_screen",
                              calculate_structure_function)]
         super().__init__(*args, channel=channel, measures=measures, **kwargs)
         self.init_theoretical()

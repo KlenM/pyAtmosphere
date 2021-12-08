@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 from pyatmosphere.measures import eta, mean_x, mean_y
 from scipy.stats import pearsonr
 
-from .simulation import Measures
+from .measure import Measure
 from .result import Result
 
 
@@ -19,7 +19,7 @@ class WindResult(Result):
 
 class TimeCoherenceResult(WindResult):
     def __init__(self, channel, time, *args, **kwargs):
-        measures = [Measures(channel, "pupil", eta, time=time)]
+        measures = [Measure(channel, "pupil", eta, time=time)]
         super().__init__(*args, channel=channel, measures=measures, **kwargs)
 
     @property
@@ -36,7 +36,7 @@ class TimeCoherenceResult(WindResult):
 
 class TimeBWcorrSimulation(WindResult):
     def __init__(self, channel, time, *args, **kwargs):
-        measures = [Measures(channel, "atmosphere", mean_x, time=time), Measures(
+        measures = [Measure(channel, "atmosphere", mean_x, time=time), Measure(
             channel, "atmosphere", mean_y, time=time)]
         super().__init__(*args, channel=channel, measures=measures, **kwargs)
 

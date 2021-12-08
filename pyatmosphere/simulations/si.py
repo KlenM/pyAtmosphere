@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 from pyatmosphere.theory.atmosphere.si import get_SI_andrews_strong
 from pyatmosphere.gpu import get_array
 
-from .simulation import Measures
+from .measure import Measure
 from .result import Result
 
 
@@ -14,7 +14,7 @@ def intensity_at_center(channel, output):
 
 class SIResult(Result):
     def __init__(self, channel, theoretical_functions=(get_SI_andrews_strong,), *args, **kwargs):
-        measures = [Measures(channel, "propagation", intensity_at_center)]
+        measures = [Measure(channel, "propagation", intensity_at_center)]
         super().__init__(*args, channel=channel, measures=measures, **kwargs)
         self.set_theoretical_functions(*theoretical_functions)
 

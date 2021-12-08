@@ -7,19 +7,19 @@ from pyatmosphere.theory.atmosphere.beam_wandering import get_r_bw
 from pyatmosphere.theory.atmosphere.long_term import get_numeric_w_LT
 from pyatmosphere.gpu import get_array
 
-from .simulation import Measures
+from .measure import Measure
 from .result import Result
 
 
 class BeamResult(Result):
     def __init__(self, channel, **kwargs):
         measures = [
-            Measures(channel, "atmosphere", mean_x),
-            Measures(channel, "atmosphere", mean_y),
-            Measures(channel, "atmosphere", mean_x2),
-            Measures(channel, "atmosphere", mean_xy),
-            Measures(channel, "atmosphere", mean_y2),
-            Measures(channel, "atmosphere", self.mean_x2_r, name="mean_x2_r"),
+            Measure(channel, "atmosphere", mean_x),
+            Measure(channel, "atmosphere", mean_y),
+            Measure(channel, "atmosphere", mean_x2),
+            Measure(channel, "atmosphere", mean_xy),
+            Measure(channel, "atmosphere", mean_y2),
+            Measure(channel, "atmosphere", self.mean_x2_r, name="mean_x2_r"),
         ]
         super().__init__(channel, measures, **kwargs)
 
@@ -82,8 +82,8 @@ class BeamResult(Result):
 
 class BeamPropagationResult(Result):
     def __init__(self, channel, **kwargs):
-        measures = [Measures(channel, "propagation", mean_r),
-                    Measures(channel, "propagation", mean_r2)]
+        measures = [Measure(channel, "propagation", mean_r),
+                    Measure(channel, "propagation", mean_r2)]
         super().__init__(channel, measures, **kwargs)
 
         self.bw_theoretical = [get_r_bw(

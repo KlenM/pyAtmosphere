@@ -1,5 +1,3 @@
-import numpy as np
-
 from pyatmosphere.gpu import get_xp
 
 
