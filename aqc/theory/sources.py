@@ -1,5 +1,6 @@
-import cupy
 import numpy as np
+
+from aqc.gpu import get_xp
 
 
 class GaussianBeam:
@@ -13,7 +14,7 @@ class GaussianBeam:
         return 2 * np.pi / self.wvl
 
     def amplitude(self, r2):
-        xp = cupy.get_array_module(r2)
+        xp = get_xp()
         return xp.sqrt(2 / xp.pi) / self.w0 * xp.exp(-(1 / self.w0**2 + 1j * 2 * xp.pi / self.wvl / 2 / self.F0) * r2)
 
     def get_theta0(self, length):

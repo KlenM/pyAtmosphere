@@ -1,5 +1,6 @@
-import cupy
 import numpy as np
+
+from aqc.gpu import get_xp
 
 
 def pp(x, digits=3):
@@ -9,11 +10,11 @@ def pp(x, digits=3):
 
 
 def fft2(x, delta):
-    xp = cupy.get_array_module(x)
+    xp = get_xp()
     return xp.fft.fftshift(xp.fft.fft2(xp.fft.fftshift(x))) * delta**2
 
 
 def ifft2(x, delta):
-    xp = cupy.get_array_module(x)
+    xp = get_xp()
     N = x.shape[0]
     return xp.fft.ifftshift(xp.fft.ifft2(xp.fft.ifftshift(x))) * (N * delta)**2

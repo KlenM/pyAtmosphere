@@ -1,10 +1,8 @@
-import cupy
 import numpy as np
 from scipy.integrate import quad
 from dataclasses import dataclass
 from typing import Tuple, Sequence
 
-from aqc.aqc import config
 from aqc.grid import RectGrid
 from aqc.utils import ifft2
 
@@ -64,7 +62,7 @@ class FFTPhaseScreen(PhaseScreen):
         xp = self.grid.get_array_module()
 
         def get_cn_coefficients(cn_f_grid):
-            cn = (xp.random.normal(size=cn_f_grid.shape) + 1j * xp.random.normal(size=cn_f_grid.shape)).astype(config["dtype"]["complex"]) * \
+            cn = (xp.random.normal(size=cn_f_grid.shape) + 1j * xp.random.normal(size=cn_f_grid.shape)).astype(np.complex64) * \
                 xp.sqrt(self.model.psd_phi_f(cn_f_grid.get_rho(), 2 * xp.pi /
                         self.wvl, self.thickness)) * 2 * xp.pi * cn_f_grid.delta
             cn[cn_f_grid.origin_index] = 0
@@ -108,7 +106,7 @@ class SSPhaseScreen(PhaseScreen):
         def in_int_function(f): return (
             2 * np.pi)**2 * f * self.model.psd_phi_f(f, 2 * xp.pi / self.wvl, self.thickness)
         self._psd = xp.array([2 * np.pi * quad(in_int_function, f[i - 1] if i != 0 else 0, f[i])[0]
-                             for i in range(self.f_grid.points)], dtype=config["dtype"]["float"])
+                             for i in range(self.f_grid.points)], dtype=np.float32)
         return self._psd
 
     def _get_spectrum(self, use_cached_spectrum):
@@ -120,7 +118,7 @@ class SSPhaseScreen(PhaseScreen):
                 rho=self.f_grid.get_rho(),
                 theta=self.f_grid.get_theta(),
                 value=(xp.array([1, 1j]) @ xp.random.normal(size=(2, self.f_grid.points))
-                       ).astype(config["dtype"]["complex"]) * xp.sqrt(self._get_psd())
+                       ).astype(np.complex64) * xp.sqrt(self._get_psd())
             )
             if use_cached_spectrum and not self._cached_spectrum:
                 self._cached_spectrum = spectrum
@@ -148,7 +146,7 @@ class SSPhaseScreen(PhaseScreen):
 
         if cached_edge_index:
             #         print(self._cached_phase_screen[:, self.grid.resolution[0] - cached_edge_index:].shape, phase_screen.shape)
-            phase_screen = cupy.append(
+            phase_screen = xp.append(
                 self._cached_phase_screen[:, self.grid.resolution[0] - cached_edge_index:], phase_screen, axis=1)
 
         if wind:
@@ -183,7 +181,7 @@ class SUPhaseScreen(PhaseScreen):
         xp = self.grid.get_array_module()
         if self._delta_k_base is None:
             self._delta_k_base = (2 * xp.pi)**2 * xp.array((self.f_grid.base**2 - np.insert(
-                self.f_grid.base, 0, 0)[:-1]**2), dtype=config["dtype"]["float"])
+                self.f_grid.base, 0, 0)[:-1]**2), dtype=np.float32)
         return self._delta_k_base
 
     def generate_phase_screen(self):
@@ -192,7 +190,7 @@ class SUPhaseScreen(PhaseScreen):
         rho = self.f_grid.get_rho()
         theta = self.f_grid.get_theta()
 
-        cn = (xp.array([1, 1j]) @ xp.random.normal(size=(2, self.f_grid.points))).astype(config["dtype"]["complex"]) * \
+        cn = (xp.array([1, 1j]) @ xp.random.normal(size=(2, self.f_grid.points))).astype(np.complex64) * \
             xp.sqrt(self.model.psd_phi_f(rho, 2 * xp.pi / self.wvl,
                     self.thickness) * xp.pi * self.delta_k_base)
 
@@ -212,7 +210,7 @@ class WindSUPhaseScreen(PhaseScreen):
         self.theta = self.f_grid.get_theta()
         xp = self.grid.get_array_module()
         self.cnp = (xp.array([1, 1j]) @ xp.random.normal(size=(2,
-                    self.f_grid.points)).astype(config["dtype"]["complex"]))
+                    self.f_grid.points)).astype(np.complex64))
         self.iteration = 0
 
     def generate_phase_screen(self):
@@ -223,7 +221,7 @@ class WindSUPhaseScreen(PhaseScreen):
 
         cn = self.cnp * \
             xp.sqrt(self.model.psd_phi_f(self.rho, 2 * xp.pi / self.wvl, self.thickness) *
-                    xp.pi * (2 * xp.pi)**2 * xp.array(self.f_grid.base**2 - np.insert(self.f_grid.base, 0, 0)[:-1]**2, dtype=config["dtype"]["float"]))
+                    xp.pi * (2 * xp.pi)**2 * xp.array(self.f_grid.base**2 - np.insert(self.f_grid.base, 0, 0)[:-1]**2, dtype=np.float32))
 
         fx, fy = self.f_grid.get_xy(self.rho, self.theta)
         offset = self.iteration * self.speed

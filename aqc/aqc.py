@@ -1,18 +1,8 @@
-import cupy
 import numpy as np
 from matplotlib import pyplot as plt
 
 from aqc.theory.atmosphere import get_rytov2
 from aqc.measures import I
-
-
-config = {
-    "use_gpu": True,
-    "dtype": {
-        "float": np.float32,
-        "complex": np.complex64
-    }
-}
 
 
 class CrossRef:

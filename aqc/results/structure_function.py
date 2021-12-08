@@ -1,13 +1,14 @@
-import cupy
 import numpy as np
 from matplotlib import pyplot as plt
+
 from aqc.simulation import Measures
 from aqc.results import Result
 from aqc.theory.phase_screens.sf import calculate_sf
+from aqc.gpu import get_array
 
 
 def calculate_structure_function(channel, output):
-    return cupy.asnumpy(calculate_sf(output).mean(axis=1))
+    return get_array(calculate_sf(output).mean(axis=1))
 
 
 class StructureFunctionResult(Result):
@@ -27,7 +28,7 @@ class StructureFunctionResult(Result):
 
     @property
     def structure_function(self):
-        return cupy.asnumpy(np.asarray(self.measures[0]).mean(axis=0))
+        return get_array(np.asarray(self.measures[0]).mean(axis=0))
 
     @property
     def r(self):

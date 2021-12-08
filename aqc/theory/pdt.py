@@ -1,4 +1,3 @@
-import cupy
 import numpy as np
 import warnings
 
@@ -9,6 +8,7 @@ from scipy.integrate import quad
 from aqc.measures import eta as eta_measure
 from aqc.pupils import CirclePupil
 from aqc.grid import RectGrid
+from aqc.gpu import get_xp
 
 
 def bw_eta_0(a, st2):
@@ -136,9 +136,10 @@ def elliptic_beam_numerical_transmission(beam_params: dict, pupil_radiuses, reso
         detS = Sxx * Syy - Sxy**2
         xmx0 = DummyChannel.grid.get_x()[0] - mean_x
         ymy0 = -1 * DummyChannel.grid.get_y().T[0] - mean_y
-        X, Y = cupy.meshgrid(xmx0, ymy0)
+        xp = get_xp()
+        X, Y = xp.meshgrid(xmx0, ymy0)
         intensity = np.sqrt(2 / np.pi / np.sqrt(detS)) * \
-            cupy.exp(-(Syy * X**2 - 2 * Sxy * X * Y + Sxx * Y**2) / detS)
+            xp.exp(-(Syy * X**2 - 2 * Sxy * X * Y + Sxx * Y**2) / detS)
         for i, pupil in enumerate(pupils):
             shift = (0, 0) if not is_tracked else (mean_x, mean_y)
             model_eta[i].append(eta_measure(

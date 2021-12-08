@@ -1,4 +1,3 @@
-import cupy
 import numpy as np
 from IPython import display
 from pathlib import Path

@@ -1,14 +1,13 @@
 from dataclasses import dataclass
 
 import numpy as np
-import cupy
 
-from aqc.aqc import config
+from aqc.gpu import get_xp
 
 
 class Grid:
     def get_array_module(self):
-        return cupy if config["use_gpu"] else np
+        return get_xp()
 
 
 @dataclass
@@ -64,11 +63,11 @@ class RectGrid(Grid):
 
     def get_x(self):
         xp = self.get_array_module()
-        return xp.arange(self._left_bound, self._right_bound, dtype=config["dtype"]["float"]).reshape((1, -1)) * self.delta
+        return xp.arange(self._left_bound, self._right_bound, dtype=np.float32).reshape((1, -1)) * self.delta
 
     def get_y(self):
         xp = self.get_array_module()
-        return xp.arange(self._top_bound, self._bottom_bound, dtype=config["dtype"]["float"]).reshape((-1, 1)) * self.delta
+        return xp.arange(self._top_bound, self._bottom_bound, dtype=np.float32).reshape((-1, 1)) * self.delta
 
     def get_xy(self):
         return self.get_x(), self.get_y()
@@ -95,18 +94,18 @@ class RandLogPolarGrid(Grid):
 
     @property
     def base(self):
-        return np.exp(np.linspace(np.log(self.f_min), np.log(self.f_max), self.points, dtype=config["dtype"]["float"]))
+        return np.exp(np.linspace(np.log(self.f_min), np.log(self.f_max), self.points, dtype=np.float32))
 
     def get_rho(self):
         xp = self.get_array_module()
-        rand = np.random.random(size=(1,)).astype(config["dtype"]["float"])
+        rand = np.random.random(size=(1,)).astype(np.float32)
         f = self.base
         f_prev = np.insert(f, 0, 0)[:-1]
         return xp.array(np.sqrt(f_prev**2 + rand * (f**2 - f_prev**2)))
 
     def get_theta(self):
         xp = self.get_array_module()
-        return 2 * xp.pi * xp.random.random(size=(self.points,)).astype(config["dtype"]["float"])
+        return 2 * xp.pi * xp.random.random(size=(self.points,)).astype(np.float32)
 
     def get_x(self, rho, theta):
         xp = self.get_array_module()

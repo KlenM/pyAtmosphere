@@ -1,12 +1,13 @@
-import cupy
 import numpy as np
 from typing import Tuple, Sequence
 from matplotlib import pyplot as plt
+
 from aqc.simulation import Measures
 from aqc.results import Result
 from aqc.measures import I, mean_x, mean_y, mean_x2, mean_xy, mean_y2  # , mean_r, mean_r2
 from aqc.theory.atmosphere.beam_wandering import get_r_bw
 from aqc.theory.atmosphere.long_term import get_numeric_w_LT
+from aqc.gpu import get_array
 
 
 class BeamResult(Result):
@@ -86,7 +87,7 @@ class BeamPropagationResult(Result):
 
         self.bw_theoretical = [get_r_bw(
             L, self.channel.path.phase_screen.model, self.channel.source) for L in self.positions]
-        rho = cupy.asnumpy(self.channel.grid.get_x()[
+        rho = get_array(self.channel.grid.get_x()[
                            0, self.channel.grid.origin_index[0]::4])
 
         def w_LT(L): return get_numeric_w_LT(L, self.channel.path.phase_screen.model, self.channel.source.w0,

@@ -1,13 +1,14 @@
-import cupy
 import numpy as np
 from matplotlib import pyplot as plt
+
 from aqc.simulation import Measures
 from aqc.results import Result
 from aqc.theory.atmosphere.si import get_SI_andrews_strong
+from aqc.gpu import get_array
 
 
 def intensity_at_center(channel, output):
-    return cupy.asnumpy(abs(output[channel.grid.origin_index[0], channel.grid.origin_index[1]])**2)
+    return get_array(abs(output[channel.grid.origin_index[0], channel.grid.origin_index[1]])**2)
 
 
 class SIResult(Result):

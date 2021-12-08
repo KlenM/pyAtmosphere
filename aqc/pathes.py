@@ -1,10 +1,9 @@
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
-import cupy
 import numpy as np
 import copy
 
-from aqc.aqc import config
+from aqc.gpu import get_xp
 from aqc.theory.vacuum import vacuum_propagation
 
 
@@ -36,7 +35,7 @@ class VacuumPath(AbstractPath):
                 delta=self.channel.grid.delta,
                 f2=self.channel.grid.get_f_grid().get_rho2(),
                 f_delta=self.channel.grid.get_f_grid().delta
-            ).astype(config["dtype"]["complex"])
+            ).astype(np.complex64)
         else:
             return input
 
@@ -60,7 +59,7 @@ class PhaseScreensPath(AbstractPath):
             return e.value
 
     def generator(self, input, *args, **kwargs):
-        xp = cupy.get_array_module(input)
+        xp = get_xp()
         vacuum_path = VacuumPath(length=None)
         vacuum_path.channel = self.channel
         self.init_phase_screens()

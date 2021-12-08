@@ -8,3 +8,4 @@ venv/
 simulations_/
 tmp/
 research/
+test.py

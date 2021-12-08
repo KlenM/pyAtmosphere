@@ -1,7 +1,3 @@
-import cupy
-import numpy as np
-
-
 def I(channel, output=None, *args, **kwargs):
     if not output is None:
         return abs(output)**2
