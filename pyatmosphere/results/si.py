@@ -1,10 +1,10 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from aqc.simulation import Measures
-from aqc.results import Result
-from aqc.theory.atmosphere.si import get_SI_andrews_strong
-from aqc.gpu import get_array
+from pyatmosphere.simulation import Measures
+from pyatmosphere.results import Result
+from pyatmosphere.theory.atmosphere.si import get_SI_andrews_strong
+from pyatmosphere.gpu import get_array
 
 
 def intensity_at_center(channel, output):

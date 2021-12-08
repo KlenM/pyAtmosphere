@@ -2,9 +2,9 @@ import numpy as np
 from matplotlib import pyplot as plt
 from functools import partial, lru_cache
 
-from aqc.simulation import Measures
-from aqc.results import Result
-from aqc.measures import eta, mean_x, mean_y
+from pyatmosphere.simulation import Measures
+from pyatmosphere.results import Result
+from pyatmosphere.measures import eta, mean_x, mean_y
 
 
 class PDTResult(Result):

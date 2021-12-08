@@ -1,5 +1,5 @@
-from aqc.gpu import get_xp
-from aqc.utils import fft2, ifft2
+from pyatmosphere.gpu import get_xp
+from pyatmosphere.utils import fft2, ifft2
 
 
 def vacuum_propagation(input, length, k, delta, f2, f_delta):

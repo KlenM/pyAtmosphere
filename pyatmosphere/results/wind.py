@@ -2,9 +2,9 @@ import numpy as np
 import pandas as pd
 from typing import Sequence
 from matplotlib import pyplot as plt
-from aqc.simulation import Measures
-from aqc.results import Result
-from aqc.measures import eta, mean_x, mean_y
+from pyatmosphere.simulation import Measures
+from pyatmosphere.results import Result
+from pyatmosphere.measures import eta, mean_x, mean_y
 from scipy.stats import pearsonr
 
 

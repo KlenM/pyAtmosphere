@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from aqc.gpu import get_xp
+from pyatmosphere.gpu import get_xp
 
 
 class Grid:

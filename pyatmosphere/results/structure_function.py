@@ -1,10 +1,10 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from aqc.simulation import Measures
-from aqc.results import Result
-from aqc.theory.phase_screens.sf import calculate_sf
-from aqc.gpu import get_array
+from pyatmosphere.simulation import Measures
+from pyatmosphere.results import Result
+from pyatmosphere.theory.phase_screens.sf import calculate_sf
+from pyatmosphere.gpu import get_array
 
 
 def calculate_structure_function(channel, output):

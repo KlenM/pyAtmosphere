@@ -5,10 +5,10 @@ from scipy.stats import lognorm, beta
 from scipy.special import i1
 from scipy.integrate import quad
 
-from aqc.measures import eta as eta_measure
-from aqc.pupils import CirclePupil
-from aqc.grid import RectGrid
-from aqc.gpu import get_xp
+from pyatmosphere.measures import eta as eta_measure
+from pyatmosphere.pupils import CirclePupil
+from pyatmosphere.grid import RectGrid
+from pyatmosphere.gpu import get_xp
 
 
 def bw_eta_0(a, st2):

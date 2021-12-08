@@ -1,6 +1,6 @@
 import numpy as np
-from aqc.theory.atmosphere import get_r0s
-from aqc.theory.atmosphere.gamma2 import get_gamma_2
+from pyatmosphere.theory.atmosphere import get_r0s
+from pyatmosphere.theory.atmosphere.gamma2 import get_gamma_2
 
 
 # def get_w_LT(length, model, gaussian_beam):

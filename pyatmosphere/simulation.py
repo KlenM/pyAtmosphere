@@ -3,8 +3,8 @@ from IPython import display
 from pathlib import Path
 from uuid import uuid4
 from typing import TypedDict, Sequence
-from aqc.pupils import CirclePupil
-from aqc.results import Result
+from pyatmosphere.pupils import CirclePupil
+from pyatmosphere.results import Result
 
 
 class Measures:

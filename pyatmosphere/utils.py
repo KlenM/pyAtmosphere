@@ -1,6 +1,6 @@
 import numpy as np
 
-from aqc.gpu import get_xp
+from pyatmosphere.gpu import get_xp
 
 
 def pp(x, digits=3):

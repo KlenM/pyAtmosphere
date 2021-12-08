@@ -3,8 +3,8 @@ from abc import ABC, abstractmethod
 import numpy as np
 import copy
 
-from aqc.gpu import get_xp
-from aqc.theory.vacuum import vacuum_propagation
+from pyatmosphere.gpu import get_xp
+from pyatmosphere.theory.vacuum import vacuum_propagation
 
 
 class AbstractPath(ABC):

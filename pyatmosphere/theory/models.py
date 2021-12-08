@@ -3,8 +3,8 @@ import scipy.integrate
 import scipy.special
 from dataclasses import dataclass
 
-from aqc.theory.atmosphere import get_r0
-from aqc.gpu import get_xp
+from pyatmosphere.theory.atmosphere import get_r0
+from pyatmosphere.gpu import get_xp
 
 
 @dataclass

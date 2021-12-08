@@ -3,8 +3,8 @@ from scipy.integrate import quad
 from dataclasses import dataclass
 from typing import Tuple, Sequence
 
-from aqc.grid import RectGrid
-from aqc.utils import ifft2
+from pyatmosphere.grid import RectGrid
+from pyatmosphere.utils import ifft2
 
 
 @dataclass

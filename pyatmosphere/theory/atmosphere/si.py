@@ -2,7 +2,7 @@ import numpy as np
 from scipy.integrate import dblquad
 from scipy.special import i0, hyp1f1, hyp2f1
 
-from aqc.theory.atmosphere import get_rytov2, get_r0s
+from pyatmosphere.theory.atmosphere import get_rytov2, get_r0s
 
 
 def get_SI_andrews_weak_kolmogorov(length, model, gaussian_beam):

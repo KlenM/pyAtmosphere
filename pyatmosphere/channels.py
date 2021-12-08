@@ -1,8 +1,8 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from aqc.theory.atmosphere import get_rytov2
-from aqc.measures import I
+from pyatmosphere.theory.atmosphere import get_rytov2
+from pyatmosphere.measures import I
 
 
 class CrossRef:
@@ -22,7 +22,7 @@ class CrossRef:
         setattr(value, self.cross_ref_name, obj)
 
 
-class AQC:
+class Channel:
     grid = CrossRef("channel")
     source = CrossRef("channel")
     path = CrossRef("channel")

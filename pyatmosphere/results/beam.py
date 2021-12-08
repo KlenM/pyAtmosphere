@@ -2,12 +2,12 @@ import numpy as np
 from typing import Tuple, Sequence
 from matplotlib import pyplot as plt
 
-from aqc.simulation import Measures
-from aqc.results import Result
-from aqc.measures import I, mean_x, mean_y, mean_x2, mean_xy, mean_y2  # , mean_r, mean_r2
-from aqc.theory.atmosphere.beam_wandering import get_r_bw
-from aqc.theory.atmosphere.long_term import get_numeric_w_LT
-from aqc.gpu import get_array
+from pyatmosphere.simulation import Measures
+from pyatmosphere.results import Result
+from pyatmosphere.measures import I, mean_x, mean_y, mean_x2, mean_xy, mean_y2  # , mean_r, mean_r2
+from pyatmosphere.theory.atmosphere.beam_wandering import get_r_bw
+from pyatmosphere.theory.atmosphere.long_term import get_numeric_w_LT
+from pyatmosphere.gpu import get_array
 
 
 class BeamResult(Result):

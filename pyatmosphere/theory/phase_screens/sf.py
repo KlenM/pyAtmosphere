@@ -1,4 +1,4 @@
-from aqc.gpu import get_xp
+from pyatmosphere.gpu import get_xp
 
 
 def calculate_sf(input):
