@@ -14,6 +14,6 @@ from aqc.theory.atmosphere.gamma2 import get_gamma_2
 #   return np.sqrt(vacuum_part**2 + turbulent_part**2)
 
 def get_numeric_w_LT(L, model, w0, wvl, F, rho, delta):
-  gamma_2 = np.array([get_gamma_2(i, L, model, w0, wvl, F) for i in rho])
-  gamma_2 = gamma_2 / ((gamma_2 * rho).sum() * delta)
-  return np.sqrt(2 * (gamma_2 * rho**3).sum() * delta)
+    gamma_2 = np.array([get_gamma_2(i, L, model, w0, wvl, F) for i in rho])
+    gamma_2 = gamma_2 / ((gamma_2 * rho).sum() * delta)
+    return np.sqrt(2 * (gamma_2 * rho**3).sum() * delta)
