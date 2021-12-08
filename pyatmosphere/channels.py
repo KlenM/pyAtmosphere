@@ -1,8 +1,16 @@
 from matplotlib import pyplot as plt
+import numpy as np
 
 from pyatmosphere.theory.atmosphere import get_rytov2
 from pyatmosphere.measures import I
 from pyatmosphere.utils import CrossRef
+
+from .grids import RectGrid, RandLogPolarGrid
+from .sources import GaussianSource
+from .pathes import IdenticalPhaseScreensPath
+from .phase_screens import SSPhaseScreen
+from .theory.models import MVKModel
+from .pupils import CirclePupil
 
 
 class Channel:
@@ -39,3 +47,33 @@ class Channel:
 
     def plot(self, *args, **kwargs):
         plt.imshow(I(self, *args, **kwargs).get(), extent=self.grid.extent)
+
+
+def QuickChannel(
+        Cn2=1e-15,
+        length=1e3,
+        count_ps=5,
+        beam_w0=0.09,
+        beam_wvl=808e-9,
+        aperture_radius=0.02,
+        grid_resolution=1024,
+        grid_delta=0.001
+        ):
+    quick_channel = Channel(
+        grid=RectGrid(resolution=grid_resolution, delta=grid_delta),
+        source=GaussianSource(wvl=beam_wvl, w0=beam_w0, F0=np.inf),
+        path=IdenticalPhaseScreensPath(
+            phase_screen=SSPhaseScreen(
+                model=MVKModel(Cn2=Cn2, l0=3e-3, L0=1e3),
+                f_grid=RandLogPolarGrid(
+                    points=2**10,
+                    f_min=1 / 1e3 / 15,
+                    f_max=1 / 3e-3 * 2
+                    )
+                ),
+            length=length,
+            count=count_ps
+            ),
+        pupil=CirclePupil(radius=aperture_radius)
+        )
+    return quick_channel
