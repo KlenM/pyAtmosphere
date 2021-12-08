@@ -1,10 +1,11 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from pyatmosphere.simulation import Measures
-from pyatmosphere.results import Result
 from pyatmosphere.theory.phase_screens.sf import calculate_sf
 from pyatmosphere.gpu import get_array
+
+from .simulation import Measures
+from .result import Result
 
 
 def calculate_structure_function(channel, output):

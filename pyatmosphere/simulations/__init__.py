@@ -1,4 +1,6 @@
 from .result import Result
+from .simulation import Simulation
+
 from .beam import BeamResult, BeamPropagationResult
 from .si import SIResult
 from .pdt import PDTResult, TrackedPDTResult

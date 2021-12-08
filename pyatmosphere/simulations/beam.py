@@ -2,12 +2,13 @@ import numpy as np
 from typing import Tuple, Sequence
 from matplotlib import pyplot as plt
 
-from pyatmosphere.simulation import Measures
-from pyatmosphere.results import Result
 from pyatmosphere.measures import I, mean_x, mean_y, mean_x2, mean_xy, mean_y2  # , mean_r, mean_r2
 from pyatmosphere.theory.atmosphere.beam_wandering import get_r_bw
 from pyatmosphere.theory.atmosphere.long_term import get_numeric_w_LT
 from pyatmosphere.gpu import get_array
+
+from .simulation import Measures
+from .result import Result
 
 
 class BeamResult(Result):

@@ -1,7 +1,8 @@
-from . import  measures
+from . import measures
+from . import simulations
 
 from .channels import Channel
-from .grid import * 
+from .grids import * 
 from .pathes import *
 from .phase_screens import *
 from .pupils import *

@@ -1,25 +1,8 @@
-import numpy as np
 from matplotlib import pyplot as plt
 
 from pyatmosphere.theory.atmosphere import get_rytov2
 from pyatmosphere.measures import I
-
-
-class CrossRef:
-    def __init__(self, cross_ref_name):
-        self.cross_ref_name = cross_ref_name
-
-    def __set_name__(self, obj, name):
-        self.privat_name = "_" + name
-
-    def __get__(self, obj, type=None):
-        return getattr(obj, self.privat_name)
-
-    def __set__(self, obj, value):
-        if not value:
-            return
-        setattr(obj, self.privat_name, value)
-        setattr(value, self.cross_ref_name, obj)
+from pyatmosphere.utils import CrossRef
 
 
 class Channel:

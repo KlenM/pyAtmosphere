@@ -3,8 +3,10 @@ from IPython import display
 from pathlib import Path
 from uuid import uuid4
 from typing import TypedDict, Sequence
+
 from pyatmosphere.pupils import CirclePupil
-from pyatmosphere.results import Result
+
+from .result import Result
 
 
 class Measures:

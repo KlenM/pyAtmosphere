@@ -2,10 +2,12 @@ import numpy as np
 import pandas as pd
 from typing import Sequence
 from matplotlib import pyplot as plt
-from pyatmosphere.simulation import Measures
-from pyatmosphere.results import Result
+
 from pyatmosphere.measures import eta, mean_x, mean_y
 from scipy.stats import pearsonr
+
+from .simulation import Measures
+from .result import Result
 
 
 class WindResult(Result):

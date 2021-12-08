@@ -1,10 +1,11 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from pyatmosphere.simulation import Measures
-from pyatmosphere.results import Result
 from pyatmosphere.theory.atmosphere.si import get_SI_andrews_strong
 from pyatmosphere.gpu import get_array
+
+from .simulation import Measures
+from .result import Result
 
 
 def intensity_at_center(channel, output):

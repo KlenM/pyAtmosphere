@@ -4,3 +4,4 @@ numpy
 scipy
 typing_extensions; python_version < '3.8'
 jupyter_ui_poll
+pandas

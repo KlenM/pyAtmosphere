@@ -7,7 +7,7 @@ from scipy.integrate import quad
 
 from pyatmosphere.measures import eta as eta_measure
 from pyatmosphere.pupils import CirclePupil
-from pyatmosphere.grid import RectGrid
+from pyatmosphere.grids import RectGrid
 from pyatmosphere.gpu import get_xp
 
 
