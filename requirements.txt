@@ -1,7 +1,6 @@
-cupy-cuda101
-fastrlock
-numpy
 scipy
-typing_extensions; python_version < '3.8'
-jupyter_ui_poll
 pandas
+matplotlib
+numpy
+jupyter_ui_poll
+typing_extensions; python_version < '3.8'
