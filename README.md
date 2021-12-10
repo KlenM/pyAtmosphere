@@ -1,4 +1,4 @@
-# Atmospheric-Quantum-Channels
+# pyAtmosphere
 
 Physics-based simulation of light propagation in turbulent atmosphere.
 
@@ -94,6 +94,16 @@ channel = Channel(
 channel_output = channel.run(pupil=False)
 intensity = measures.I(channel, output=channel_output)
 mean_x = measures.mean_x(channel, output=channel_output)
+```
+
+### Simulations
+```python
+from pyatmosphere import simulations
+
+beam_result = simulations.BeamResult(quick_channel, max_size=2000)
+pdt_result = simulations.PDTResult(quick_channel, max_size=6000)
+sim = simulations.Simulation([beam_result, pdt_result])
+sim.run(plot_step=1000)
 ```
 
 ## Contributing
