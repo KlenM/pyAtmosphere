@@ -4,6 +4,7 @@ import numpy as np
 from pyatmosphere.theory.atmosphere import get_rytov2
 from pyatmosphere.measures import I
 from pyatmosphere.utils import CrossRef
+from pyatmosphere.gpu import get_array
 
 from .grids import RectGrid, RandLogPolarGrid
 from .sources import GaussianSource
@@ -46,7 +47,7 @@ class Channel:
         return get_rytov2(self.path.phase_screen.model.Cn2, self.source.k, self.path.length)
 
     def plot(self, *args, **kwargs):
-        plt.imshow(I(self, *args, **kwargs).get(), extent=self.grid.extent)
+        plt.imshow(get_array(I(self, *args, **kwargs)), extent=self.grid.extent)
 
 
 def QuickChannel(
