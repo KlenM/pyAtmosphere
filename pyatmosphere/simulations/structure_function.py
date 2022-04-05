@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from pyatmosphere.theory.phase_screens.sf import calculate_sf
-from pyatmosphere.gpu import get_array
+from pyatmosphere.gpu import get_array, get_xp
 
 from .measure import Measure
 from .result import Result
@@ -24,12 +24,13 @@ class StructureFunctionResult(Result):
         k = 2 * np.pi / channel.path.phase_screen.wvl
         self.get_theoretical = channel.path.phase_screen.model.sf_phi(
             self.r, k, channel.path.phase_screen.thickness)
-        self.get_numerical_theoretical = channel.path.phase_screen.model.sf_phi_numeric(
-            self.r, k, channel.path.phase_screen.thickness)
+        self.get_numerical_theoretical = get_array(channel.path.phase_screen.model.sf_phi_numeric(
+            self.r, k, channel.path.phase_screen.thickness))
 
     @property
     def structure_function(self):
-        return get_array(np.asarray(self.measures[0]).mean(axis=0))
+        xp = get_xp()
+        return get_array(xp.asarray(self.measures[0]).mean(axis=0))
 
     @property
     def r(self):
