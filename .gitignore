@@ -9,3 +9,5 @@ simulations_/
 tmp/
 research/
 test.py
+dist/
+pyAtmosphere.egg-info/

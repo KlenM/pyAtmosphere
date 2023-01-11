@@ -1,0 +1,67 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyAtmosphere"
+version = "0.0.1"
+authors = [
+	{ name="Mykyta Yurin", email="phys@yurin.space" },
+]
+description = "Physics-based simulation of light propagation in turbulent atmosphere"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.7"
+
+dependencies = [
+    "numpy",
+    "pandas",
+    "scipy",
+    "matplotlib",
+    "typing_extensions; python_version < '3.8'",
+]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Telecommunications Industry",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Astronomy",
+    "Topic :: Scientific/Engineering :: Atmospheric Science",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Education",
+    "Topic :: Security",
+    "Topic :: Security :: Cryptography",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: POSIX",
+    "Operating System :: Unix",
+    "Operating System :: MacOS",
+    "Environment :: GPU",
+    "Environment :: GPU :: NVIDIA CUDA",
+]
+
+[project.optional-dependencies]
+doc = [
+    "sphinx",
+]
+
+jupyter = [
+    "jupyter_ui_poll",
+]
+
+[project.urls]
+source = "https://github.com/NYurin/pyAtmosphere"

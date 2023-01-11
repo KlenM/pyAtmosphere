@@ -1,4 +1,3 @@
-from IPython import display
 from typing import Sequence
 
 from pyatmosphere.simulations.result import Result
@@ -142,7 +141,11 @@ class Simulation:
         if plot_step and iteration % plot_step == 0:
             for result in self.results_list:
                 result.plot_output()
-            display.clear_output(wait=True)
+            try:
+                from IPython import display
+                display.clear_output(wait=True)
+            except ModuleNotFoundError:
+                pass
 
         if save_step and iteration % save_step == 0:
             for result in self.results_list:
