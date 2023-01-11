@@ -21,6 +21,15 @@ class Channel:
     pupil = CrossRef("channel")
 
     def __init__(self, grid, source, path, pupil=None, name=""):
+        """
+        The outer level class that represents all the combined parts of the channel.
+
+        Arguments:
+            grid: Sample grid of the channel
+            source: Source of the light
+            path: Space where the light will propagate
+            pupil: Aperture at the end of the channel
+        """
         self.grid = grid
         self.source = source
         self.path = path

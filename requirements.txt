@@ -4,3 +4,4 @@ matplotlib
 numpy
 jupyter_ui_poll
 typing_extensions; python_version < '3.8'
+sphinx
