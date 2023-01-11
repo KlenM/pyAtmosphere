@@ -4,8 +4,8 @@ from functools import partial, lru_cache
 
 from pyatmosphere.measures import eta, mean_x, mean_y
 
-from .measure import Measure
-from .result import Result
+from pyatmosphere.simulations.measure import Measure
+from pyatmosphere.simulations.result import Result
 
 
 class PDTResult(Result):

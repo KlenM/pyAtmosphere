@@ -6,12 +6,12 @@ from pyatmosphere.measures import I
 from pyatmosphere.utils import CrossRef
 from pyatmosphere.gpu import get_array
 
-from .grids import RectGrid, RandLogPolarGrid
-from .sources import GaussianSource
-from .pathes import IdenticalPhaseScreensPath
-from .phase_screens import SSPhaseScreen
-from .theory.models import MVKModel
-from .pupils import CirclePupil
+from pyatmosphere.grids import RectGrid, RandLogPolarGrid
+from pyatmosphere.sources import GaussianSource
+from pyatmosphere.pathes import IdenticalPhaseScreensPath
+from pyatmosphere.phase_screens import SSPhaseScreen
+from pyatmosphere.theory.models import MVKModel
+from pyatmosphere.pupils import CirclePupil
 
 
 class Channel:

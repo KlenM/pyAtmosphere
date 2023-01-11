@@ -7,8 +7,8 @@ from pyatmosphere.theory.atmosphere.beam_wandering import get_r_bw
 from pyatmosphere.theory.atmosphere.long_term import get_numeric_w_LT
 from pyatmosphere.gpu import get_array
 
-from .measure import Measure
-from .result import Result
+from pyatmosphere.simulations.measure import Measure
+from pyatmosphere.simulations.result import Result
 
 
 class BeamResult(Result):
