@@ -6,8 +6,8 @@ from matplotlib import pyplot as plt
 from pyatmosphere.measures import eta, mean_x, mean_y
 from scipy.stats import pearsonr
 
-from .measure import Measure
-from .result import Result
+from pyatmosphere.simulations.measure import Measure
+from pyatmosphere.simulations.result import Result
 
 
 class WindResult(Result):

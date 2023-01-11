@@ -1,11 +1,17 @@
-from . import measures
-from . import simulations
+from pyatmosphere import measures
+from pyatmosphere import simulations
 
-from .channels import *
-from .grids import * 
-from .pathes import *
-from .phase_screens import *
-from .pupils import *
-from .sources import *
+from pyatmosphere.channels import Channel, QuickChannel
+from pyatmosphere.grids import *
+from pyatmosphere.pathes import *
+from pyatmosphere.phase_screens import *
+from pyatmosphere.pupils import *
+from pyatmosphere.sources import *
 
-from .theory.models import *
+from pyatmosphere.theory.models import *
+
+
+__all__ = [
+    'Channel',
+    'QuickChannel',
+]

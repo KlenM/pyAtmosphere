@@ -4,8 +4,8 @@ from matplotlib import pyplot as plt
 from pyatmosphere.theory.phase_screens.sf import calculate_sf
 from pyatmosphere.gpu import get_array, get_xp
 
-from .measure import Measure
-from .result import Result
+from pyatmosphere.simulations.measure import Measure
+from pyatmosphere.simulations.result import Result
 
 
 def calculate_structure_function(channel, output):

@@ -1,8 +1,8 @@
 from IPython import display
 from typing import Sequence
 
-from .result import Result
-from .measure import Measure
+from pyatmosphere.simulations.result import Result
+from pyatmosphere.simulations.measure import Measure
 
 
 class Simulation:
