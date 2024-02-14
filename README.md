@@ -106,6 +106,25 @@ sim = simulations.Simulation([beam_result, pdt_result])
 sim.run(plot_step=1000)
 ```
 
+## Citing
+If you make use of this software, please cite our associated paper:
+```bib
+@article{klen2023,
+  title = {Numerical simulations of atmospheric quantum channels},
+  author = {Klen, M. and Semenov, A. A.},
+  journal = {Phys. Rev. A},
+  volume = {108},
+  issue = {3},
+  pages = {033718},
+  numpages = {19},
+  year = {2023},
+  month = {Sep},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevA.108.033718},
+  url = {https://link.aps.org/doi/10.1103/PhysRevA.108.033718}
+}
+```
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 Feel free to open new issues if you have any questions.
