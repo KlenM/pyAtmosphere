@@ -3,7 +3,9 @@ import scipy.integrate
 
 
 def get_r_bw(L, model, gaussian_beam):
-    """Source ???"""
+    """Klyatskin, V.I., Kon, A.I. On the displacement of spatially-bounded light beams 
+    in a turbulent medium in the Markovian-random-process approximation. 
+    Radiophys Quantum Electron 15, 1056–1061 (1972). https://doi.org/10.1007/BF01031824"""
     def drc2(z, kappa, L):
         def Dsp(rho):
             kappa0 = (2 * np.pi) / model.L0
