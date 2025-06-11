@@ -2,7 +2,6 @@ import numpy as np
 import warnings
 
 from scipy.stats import lognorm, beta
-from scipy.special import i1
 from scipy.integrate import quad
 
 from pyatmosphere.measures import eta as eta_measure
@@ -11,42 +10,11 @@ from pyatmosphere.grids import RectGrid
 from pyatmosphere.gpu import get_xp
 
 
-def bw_eta_0(a, st2):
-    return 1 - np.exp(-2 * a**2 / st2)
-
-
-def bw_shape_l(eta_0, a, st2):
-    return 8 * a**2 / st2 * (np.exp(-4 * a**2 / st2) * i1(4 * a**2 / st2) / (1 - np.exp(-4 * a**2 / st2) * np.i0(4 * a**2 / st2))) * np.log(2 * eta_0 / (1 - np.exp(-4 * a**2 / st2) * np.i0(4 * a**2 / st2)))**(-1)
-
-
-def bw_scale_R(eta_0, a, l, st2):
-    return a * np.log(2 * eta_0 / (1 - np.exp(-4 * a**2 / st2) * np.i0(4 * a**2 / st2)))**(-1 / l)
-
-
-def bw_pdt(eta, eta_0, R, l, bw2):
-    with warnings.catch_warnings():
-        warnings.filterwarnings(
-            'ignore', message=r"divide by zero encountered in", category=RuntimeWarning)
-        warnings.filterwarnings(
-            'ignore', message=r"invalid value encountered in (power|multiply)", category=RuntimeWarning)
-        pdt = R**2 / (bw2 * eta * l) * np.log(eta_0 / eta)**(2 / l - 1) * \
-            np.exp(-(R**2 / (2 * bw2)) * np.log(eta_0 / eta)**(2 / l))
-        pdt[np.isnan(pdt)] = 0
-        return pdt
-
-
 def lognormal_pdt(eta, eta_mean, eta2_mean):
     mu = -np.log(eta_mean**2 / np.sqrt(eta2_mean))
     sigma = np.sqrt(np.log(eta2_mean / eta_mean**2))
     lognorm_model = lognorm(sigma, scale=np.exp(-mu))
     return lognorm_model.pdf(eta) / lognorm_model.cdf(1)
-
-
-def beam_wandering_pdt(eta, a, st2, bw2, eta_0=None, shape_l=None, scale_R=None):
-    eta_0 = eta_0 or bw_eta_0(a, st2)
-    shape_l = shape_l or bw_shape_l(eta_0, a, st2)
-    scale_R = scale_R or bw_scale_R(eta_0, a, shape_l, st2)
-    return bw_pdt(eta, eta_0, scale_R, shape_l, bw2)
 
 
 def beta_pdt(eta, eta_mean, eta2_mean):
