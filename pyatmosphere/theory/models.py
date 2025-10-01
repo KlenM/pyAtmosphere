@@ -94,8 +94,8 @@ class MVKModel(Model):
 class AndrewsModel(Model):
     def psd_n(self, kappa):
         xp = get_xp()
-        kl = 3.3 / l0
-        k0 = (2 * np.pi) / L0
-        k_per_kl = k / kl
-        return 0.033 * Cn2 * (1 + 1.802 * k_per_kl - 0.254 * k_per_kl**(7/6)) * \
-            xp.exp(-(k_per_kl)**2) / (k**2 + k0**2)**(11/6)
+        kl = 3.3 / self.l0
+        k0 = (2 * np.pi) / self.L0
+        k_per_kl = kappa / kl
+        return 0.033 * self.Cn2 * (1 + 1.802 * k_per_kl - 0.254 * k_per_kl**(7/6)) * \
+            xp.exp(-(k_per_kl)**2) / (kappa**2 + k0**2)**(11/6)
