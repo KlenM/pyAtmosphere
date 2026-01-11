@@ -1,0 +1,45 @@
+cff-version: 1.2.0
+title: pyAtmosphere
+message: Please cite this software using these metadata.
+type: software
+authors:
+  - given-names: Mykyta
+    family-names: Klen
+    email: mykyta.klen@bitp.kyiv.ua
+    affiliation: Bogolyubov Institute for Theoretical Physics
+    orcid: 'https://orcid.org/0009-0009-3030-6450'
+identifiers:
+  - type: doi
+    value: 10.1103/PhysRevA.108.033718
+    description: Related paper
+repository-code: 'https://github.com/KlenM/pyAtmosphere'
+abstract: >-
+  Physics-based simulation of light propagation in turbulent
+  atmosphere
+keywords:
+  - Free-space channels
+  - Physics simulation
+  - Phase-screens method
+  - Split-step method
+  - Atmospheric turbulence
+license: GPL-3.0
+commit: 0.0.1
+version: 0.0.1
+date-released: '2023-01-11'
+preferred-citation:
+  type: article
+  authors:
+    - family-names: "Klen"
+      given-names: "Mykyta"
+    - family-names: "Semenov"
+      given-names: "Andrew A."
+  doi: "10.1103/PhysRevA.108.033718"
+  journal: "Physical Review A"
+  month: 9
+  title: "Numerical simulations of atmospheric quantum channels"
+  issue: 3
+  volume: 108
+  year: 2023
+  start: 033718
+  publisher:
+    name: "American Physical Society (APS)"
